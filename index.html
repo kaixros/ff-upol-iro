@@ -1,4 +1,12 @@
-
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nabídka výjezdů — FF UP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#F5F6FA; --surface:#FFFFFF; --ink:#16213E; --muted:#5B6683;
@@ -81,6 +89,8 @@ h1{font-family:var(--disp);font-weight:700;font-size:clamp(28px,5vw,42px);
 .opt:hover{background:var(--accent-wash)}
 .opt input{accent-color:var(--accent);width:16px;height:16px;margin:0}
 .opt .oc{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.opt.empty{opacity:.4}
+.opt.empty:hover{background:transparent;cursor:default}
 
 .clear{background:transparent;border:0;color:var(--accent-ink);font:600 13px/1 var(--body);
   cursor:pointer;padding:11px 6px;text-decoration:underline;text-underline-offset:3px}
@@ -89,6 +99,7 @@ h1{font-family:var(--disp);font-weight:700;font-size:clamp(28px,5vw,42px);
 /* ---------- results ---------- */
 .meta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
   padding:22px 0 4px;flex-wrap:wrap}
+.meta[hidden]{display:none}
 .count{font-family:var(--disp);font-weight:600;font-size:18px}
 .count b{color:var(--accent-ink)}
 .metahint{color:var(--muted);font-size:13px}
@@ -152,8 +163,8 @@ footer{border-top:1px solid var(--border);padding:20px 0 40px;color:var(--muted)
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
-
-
+</head>
+<body>
 
 <header class="top"><div class="wrap">
   <div class="eyebrow">Filozofická fakulta UP · zahraniční oddělení</div>
@@ -220,7 +231,7 @@ footer{border-top:1px solid var(--border);padding:20px 0 40px;color:var(--muted)
    i schované hyperlinky, ven pustí jen studentské sloupce).
    Vlož sem URL webové aplikace z Apps Scriptu (končí na /exec):
    ------------------------------------------------------------ */
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMdkKEfLh499nxxnkjVpUz5ZuhJKXjmWTKeEjj6_F_Jso8Jn6DiTXIhboOQFxOug-qXQ/exec";
+const APPS_SCRIPT_URL = "";
 
 /* ALTERNATIVA — publikovaný CSV (Soubor → Sdílet → Publikovat
    na web → CSV). Pozor: schované hyperlinky u starých řádků se
@@ -889,24 +900,42 @@ function buildChips(){
 }
 
 /* ---------- země dropdown ---------- */
+let zemeRows=[];
 function buildZeme(){
-  const counts={};
-  DATA.forEach(r=>counts[r._zeme]=(counts[r._zeme]||0)+1);
-  const order=Object.keys(counts).sort((a,b)=>a.localeCompare(b,'cs'));
-  const box=document.getElementById('zOpts'); box.innerHTML='';
-  order.forEach(z=>{
+  const box=document.getElementById('zOpts'); box.innerHTML=''; zemeRows=[];
+  const all=[...new Set(DATA.map(r=>r._zeme))].sort((a,b)=>a.localeCompare(b,'cs'));
+  all.forEach(z=>{
     const lab=document.createElement('label'); lab.className='opt';
-    lab.innerHTML=`<input type="checkbox" value="${z.replace(/"/g,'&quot;')}"><span>${z}</span><span class="oc">${counts[z]}</span>`;
-    lab.querySelector('input').onchange=e=>{
-      e.target.checked?selZeme.add(z):selZeme.delete(z);
-      showAll=false; updateZemeLabel(); render();
-    };
+    lab.innerHTML=`<input type="checkbox"><span>${esc(z)}</span><span class="oc"></span>`;
+    const input=lab.querySelector('input'), oc=lab.querySelector('.oc');
+    input.checked=selZeme.has(z);
+    input.onchange=()=>{ input.checked?selZeme.add(z):selZeme.delete(z);
+      showAll=false; updateZemeLabel(); render(); };
     box.appendChild(lab);
+    zemeRows.push({z,lab,input,oc});
   });
   document.getElementById('zSearch').oninput=e=>{
     const v=e.target.value.toLowerCase();
-    [...box.children].forEach(l=>{l.style.display=l.textContent.toLowerCase().includes(v)?'':'none';});
+    zemeRows.forEach(({lab})=>{lab.style.display=lab.textContent.toLowerCase().includes(v)?'':'none';});
   };
+  refreshZemeCounts();
+}
+/* Počty u zemí podle vybraných kateder + hledání (ignoruje výběr zemí,
+   ať se ostatní země "nevynulují", když jednu zaškrtneš). */
+function refreshZemeCounts(){
+  const counts={};
+  DATA.forEach(r=>{
+    if(selKat.size && !r._tags.some(t=>selKat.has(t))) return;
+    if(query){ const hay=(r.skola+' '+r.mesto+' '+r._zeme).toLowerCase(); if(!hay.includes(query)) return; }
+    counts[r._zeme]=(counts[r._zeme]||0)+1;
+  });
+  zemeRows.forEach(({z,lab,input,oc})=>{
+    const n=counts[z]||0;
+    oc.textContent=n;
+    const empty=n===0 && !input.checked;
+    lab.classList.toggle('empty',empty);
+    input.disabled=empty;
+  });
 }
 function updateZemeLabel(){
   const cnt=document.getElementById('ddCnt'), lab=document.getElementById('ddLabel');
@@ -967,10 +996,11 @@ function card(r){
   </article>`;
 }
 
-function render(){
+function renderCore(){
   const grid=document.getElementById('grid'), state=document.getElementById('state'),
         meta=document.getElementById('meta');
   const active = selKat.size||selZeme.size||query;
+  refreshZemeCounts();
   document.getElementById('clearBtn').disabled = !active;
   document.getElementById('katSel').textContent = selKat.size?`· vybráno ${selKat.size}`:'';
 
@@ -996,6 +1026,9 @@ function render(){
   grid.innerHTML=res.map(card).join('');
 }
 
+/* obal: po každém překreslení pošli rodičovské stránce svou výšku */
+function render(){ renderCore(); sendHeight(); }
+
 /* sticky stín */
 const fbar=document.getElementById('filters');
 const senti=document.createElement('div');
@@ -1003,5 +1036,18 @@ fbar.parentNode.insertBefore(senti,fbar);
 new IntersectionObserver(([e])=>fbar.classList.toggle('stuck',!e.isIntersecting),{threshold:1})
   .observe(senti);
 
+/* ---------- auto-výška iframu ---------- */
+function sendHeight(){
+  const h=Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+  try{ parent.postMessage({type:'vyjezdy-height', height:h}, '*'); }catch(e){}
+}
+if('ResizeObserver' in window){
+  new ResizeObserver(()=>sendHeight()).observe(document.body);
+}
+window.addEventListener('load', sendHeight);
+window.addEventListener('resize', sendHeight);
+
 load();
 </script>
+</body>
+</html>
