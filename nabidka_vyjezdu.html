@@ -1,0 +1,1007 @@
+
+<style>
+:root{
+  --bg:#F5F6FA; --surface:#FFFFFF; --ink:#16213E; --muted:#5B6683;
+  --accent:#2947C7; --accent-ink:#1B2E82; --accent-wash:#EDF0FD;
+  --amber:#B26A15; --amber-wash:#FBF1E2; --stamp:#B5482A;
+  --border:#E3E6EF; --border-strong:#CDD3E2;
+  --radius:14px; --shadow:0 1px 2px rgba(22,33,62,.04),0 6px 24px rgba(22,33,62,.06);
+  --disp:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'Space Mono',ui-monospace,'Cascadia Mono',monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* ---------- header ---------- */
+header.top{padding:34px 0 22px;border-bottom:1px solid var(--border)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent-ink);font-weight:700}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(28px,5vw,42px);
+  letter-spacing:-.02em;margin:.28em 0 .18em;line-height:1.04}
+.sub{color:var(--muted);max-width:56ch;font-size:15px}
+.prog{display:inline-flex;gap:4px;margin-top:18px;background:var(--surface);
+  border:1px solid var(--border);border-radius:999px;padding:4px}
+.prog button{font:600 13px/1 var(--body);border:0;background:transparent;color:var(--muted);
+  padding:8px 15px;border-radius:999px;cursor:pointer}
+.prog button[aria-pressed=true]{background:var(--accent);color:#fff}
+.prog button:disabled{opacity:.45;cursor:not-allowed}
+.prog .soon{font-family:var(--mono);font-size:9px;letter-spacing:.1em;margin-left:5px;
+  vertical-align:top;text-transform:uppercase}
+
+/* ---------- filters ---------- */
+.filters{position:sticky;top:0;z-index:30;background:var(--bg);
+  border-bottom:1px solid var(--border);padding:16px 0}
+.filters.stuck{box-shadow:0 6px 20px rgba(22,33,62,.06)}
+.frow{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.fcol{display:flex;flex-direction:column;gap:7px}
+.flabel{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;display:flex;align-items:center;gap:8px}
+.flabel .n{color:var(--accent-ink)}
+.search{flex:1 1 200px;min-width:180px}
+.search input{width:100%;font:400 15px/1 var(--body);color:var(--ink);
+  background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;
+  padding:11px 13px 11px 38px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235B6683' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:13px 50%}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+
+/* katedra chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px;max-width:760px}
+.chip{font:600 12px/1 var(--mono);letter-spacing:.04em;border:1px solid var(--border-strong);
+  background:var(--surface);color:var(--ink);padding:8px 11px;border-radius:8px;cursor:pointer;
+  transition:transform .04s ease}
+.chip:hover{border-color:var(--accent)}
+.chip:active{transform:translateY(1px)}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* země dropdown */
+.dd{position:relative}
+.dd>button{display:flex;align-items:center;gap:9px;font:500 14px/1 var(--body);
+  background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;
+  padding:11px 13px;cursor:pointer;color:var(--ink);white-space:nowrap}
+.dd>button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.dd>button .cnt{font-family:var(--mono);font-size:11px;background:var(--accent-wash);
+  color:var(--accent-ink);padding:2px 6px;border-radius:5px;font-weight:700}
+.dd>button svg{transition:transform .15s ease}
+.dd[data-open=true]>button svg{transform:rotate(180deg)}
+.panel{position:absolute;top:calc(100% + 6px);left:0;z-index:40;width:280px;max-height:340px;
+  overflow:auto;background:var(--surface);border:1px solid var(--border-strong);
+  border-radius:12px;box-shadow:var(--shadow);padding:8px;display:none}
+.dd[data-open=true] .panel{display:block}
+.panel .psearch{width:100%;font:400 13px/1 var(--body);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.panel .psearch:focus{outline:1px solid var(--accent)}
+.opt{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;cursor:pointer;
+  font-size:14px}
+.opt:hover{background:var(--accent-wash)}
+.opt input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.opt .oc{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+.clear{background:transparent;border:0;color:var(--accent-ink);font:600 13px/1 var(--body);
+  cursor:pointer;padding:11px 6px;text-decoration:underline;text-underline-offset:3px}
+.clear:disabled{color:var(--muted);opacity:.5;cursor:default;text-decoration:none}
+
+/* ---------- results ---------- */
+.meta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:22px 0 4px;flex-wrap:wrap}
+.count{font-family:var(--disp);font-weight:600;font-size:18px}
+.count b{color:var(--accent-ink)}
+.metahint{color:var(--muted);font-size:13px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;
+  padding:16px 0 60px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px 18px 16px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--shadow);
+  position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);
+  opacity:.0;transition:opacity .15s}
+.card:hover::before{opacity:.9}
+.card .ceyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.card .ceyebrow .dot{width:3px;height:3px;border-radius:50%;background:var(--border-strong)}
+.card h3{font-family:var(--disp);font-weight:600;font-size:18px;line-height:1.2;margin:0;
+  letter-spacing:-.01em}
+.badges{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.gate{font:700 12px/1 var(--mono);letter-spacing:.08em;color:var(--accent-ink);
+  background:var(--accent-wash);border:1px solid #D6DDFA;padding:5px 8px;border-radius:6px}
+.pill{font:600 11px/1 var(--body);padding:5px 9px;border-radius:999px;display:inline-flex;
+  align-items:center;gap:5px}
+.pill.kvota{background:var(--amber-wash);color:var(--amber)}
+.pill.lang{background:#EAF3EE;color:#2E6B45}
+.note{font-size:13px;color:var(--muted);border-left:2px solid var(--border-strong);
+  padding-left:10px;line-height:1.45}
+.note.pub{color:var(--stamp);border-color:#E6C3B7}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:4px}
+.lnk{display:inline-flex;align-items:center;gap:6px;font:600 13px/1 var(--body);
+  text-decoration:none;padding:9px 12px;border-radius:9px;border:1px solid var(--border-strong);
+  color:var(--ink);background:var(--surface)}
+.lnk svg{opacity:.7}
+.lnk:hover{border-color:var(--accent);color:var(--accent-ink)}
+.lnk.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.lnk.primary svg{opacity:.9}
+.lnk.primary:hover{background:var(--accent-ink);color:#fff}
+.lnk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* states */
+.state{text-align:center;padding:64px 20px;color:var(--muted)}
+.state .big{font-family:var(--disp);font-weight:600;font-size:22px;color:var(--ink);
+  margin-bottom:8px;letter-spacing:-.01em}
+.state .linkbtn{background:transparent;border:0;color:var(--accent-ink);font:600 15px/1 var(--body);
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin-top:14px}
+.state svg{color:var(--border-strong);margin-bottom:14px}
+
+.banner{background:var(--amber-wash);color:var(--amber);border:1px solid #EAD6B4;
+  border-radius:10px;padding:10px 14px;font-size:13px;margin:14px 0 0;display:none}
+.banner.show{display:block}
+
+footer{border-top:1px solid var(--border);padding:20px 0 40px;color:var(--muted);font-size:12px;
+  font-family:var(--mono);letter-spacing:.03em;display:flex;justify-content:space-between;
+  flex-wrap:wrap;gap:10px}
+
+@media (max-width:560px){
+  .grid{grid-template-columns:1fr}
+  .search{flex-basis:100%}
+  .dd,.dd>button{width:100%}
+  .panel{width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+
+
+<header class="top"><div class="wrap">
+  <div class="eyebrow">Filozofická fakulta UP · zahraniční oddělení</div>
+  <h1>Nabídka výjezdů</h1>
+  <p class="sub">Vyber svoji katedru a podívej se, kam můžeš vyjet. U každé partnerské školy najdeš katalog kurzů, web školy a informace k ubytování.</p>
+  <div class="prog" role="group" aria-label="Program mobility">
+    <button aria-pressed="true" data-prog="Erasmus">Erasmus+</button>
+    <button disabled aria-pressed="false">CEEPUS<span class="soon">brzy</span></button>
+    <button disabled aria-pressed="false">Freemover<span class="soon">brzy</span></button>
+  </div>
+</div></header>
+
+<div class="filters" id="filters"><div class="wrap">
+  <div class="frow">
+    <div class="fcol" style="flex:1 1 100%">
+      <span class="flabel">Katedra <span class="n" id="katSel"></span></span>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+  <div class="frow" style="margin-top:14px">
+    <div class="fcol dd" id="ddZeme" data-open="false">
+      <span class="flabel">Země</span>
+      <button aria-haspopup="true" aria-expanded="false" id="ddBtn">
+        <span id="ddLabel">Všechny země</span>
+        <span class="cnt" id="ddCnt" hidden>0</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="panel" id="ddPanel" role="listbox" aria-multiselectable="true">
+        <input class="psearch" id="zSearch" placeholder="Hledat zemi…" aria-label="Hledat zemi">
+        <div id="zOpts"></div>
+      </div>
+    </div>
+    <div class="fcol search">
+      <span class="flabel">Hledat školu</span>
+      <input id="q" type="search" placeholder="Název univerzity nebo města…" aria-label="Hledat školu">
+    </div>
+    <div class="fcol" style="justify-content:flex-end">
+      <span class="flabel" aria-hidden="true">&nbsp;</span>
+      <button class="clear" id="clearBtn" disabled>Zrušit filtry</button>
+    </div>
+  </div>
+  <div class="banner" id="banner"></div>
+</div></div>
+
+<main class="wrap">
+  <div class="meta" id="meta" hidden>
+    <div class="count" id="count"></div>
+    <div class="metahint" id="hint"></div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="state" id="state"></div>
+</main>
+
+<footer><div class="wrap" style="display:flex;justify-content:space-between;width:100%">
+  <span>FF UP · nabídka výjezdů</span>
+  <span id="srcTag">zdroj: ukázková data</span>
+</div></footer>
+
+<script>
+/* ============================================================
+   KONFIGURACE ZDROJE DAT
+   ------------------------------------------------------------
+   DOPORUČENO — Apps Script (čte živě originální tabulku, vytáhne
+   i schované hyperlinky, ven pustí jen studentské sloupce).
+   Vlož sem URL webové aplikace z Apps Scriptu (končí na /exec):
+   ------------------------------------------------------------ */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMdkKEfLh499nxxnkjVpUz5ZuhJKXjmWTKeEjj6_F_Jso8Jn6DiTXIhboOQFxOug-qXQ/exec";
+
+/* ALTERNATIVA — publikovaný CSV (Soubor → Sdílet → Publikovat
+   na web → CSV). Pozor: schované hyperlinky u starých řádků se
+   tudy ztratí a publikuje se celá tabulka. Nech prázdné, když
+   používáš Apps Script výše. */
+const SHEET_CSV_URL = "";
+
+/* Když jsou obě pole prázdná, appka běží na zabudované ukázce. */
+
+/* ---- známé kódy kateder (pro čištění sloučených jako KPE/KEMS) ---- */
+const KNOWN = new Set(["KHI","PCH","KEMS","KSA","KFI","KAA","KPE","KRI","KBH","KGN",
+"KMU","DAS","KRS","NIZ","KZU","KRF","KSO","KDU","DVU","KSR","KOL","KRP","CJV","KSU",
+"KAE","JUD","KKF"]);
+function deptTags(raw){
+  if(!raw) return [];
+  const toks = raw.toUpperCase().split(/[^A-ZÀ-Ž]+/).filter(Boolean);
+  const tags = toks.filter(t=>KNOWN.has(t));
+  return tags.length ? [...new Set(tags)] : [raw.trim()];
+}
+
+/* ---- CSV parser -> 2D pole (uvozovky, čárky, nové řádky) ---- */
+function parseCSV(text){
+  const rows=[]; let row=[], field='', i=0, q=false;
+  text = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  while(i<text.length){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){field+='"';i++;} else q=false; }
+      else field+=c;
+    }else{
+      if(c==='"') q=true;
+      else if(c===',') { row.push(field); field=''; }
+      else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else field+=c;
+    }
+    i++;
+  }
+  if(field.length||row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+
+/* Najdi řádek s hlavičkou (i když je nad ním titulek) a udělej objekty. */
+const HEADER_HINTS=['katedra','PRACOVIŠTĚ','skola','NÁZEV INSTITUCE'];
+function csvToObjects(rows){
+  if(!rows.length) return [];
+  let h=0;
+  for(let r=0;r<Math.min(rows.length,10);r++){
+    if(rows[r].map(x=>(x||'').trim()).some(v=>HEADER_HINTS.includes(v))){h=r;break;}
+  }
+  const head=rows[h].map(x=>(x||'').trim());
+  return rows.slice(h+1).filter(r=>r.some(v=>v&&v.trim())).map(r=>{
+    const o={}; head.forEach((k,idx)=>o[k]=(r[idx]||'').trim()); return o;
+  });
+}
+
+/* Mapování polí: funguje pro čistá i pro originální (české) záhlaví. */
+const FIELD_ALIASES={
+  katedra:['katedra','PRACOVIŠTĚ'], skola:['skola','NÁZEV INSTITUCE'],
+  mesto:['mesto','MĚSTO'], zeme:['zeme','STÁT'],
+  web:['web','WEBOVÉ STRÁNKY ŠKOLY'], course:['course','COURSE CATALOGUE'],
+  ubytovani:['ubytovani','ACCOMMODATION'], kvota:['kvota','Roční kvóta studentů/měsíců'],
+  jazyk:['jazyk','Doporučená jazyková úroveň'], poznamka:['poznamka','VEŘEJNÁ POZNÁMKA'],
+  program:['program']
+};
+function pick(o,aliases){ for(const a of aliases){ if(a in o && String(o[a]).trim()!=='') return String(o[a]).trim(); } return ''; }
+
+/* Pusť dál jen to, co je opravdu odkaz (holý popisek z CSV ignoruj). */
+function asUrl(v){
+  v=(v||'').trim(); if(!v) return '';
+  if(/^https?:\/\//i.test(v)) return v.replace(/[.,;]+$/,'');
+  if(/^www\./i.test(v)) return 'https://'+v.split(/\s+/)[0];
+  const m=v.match(/https?:\/\/[^\s;,]+/); if(m) return m[0].replace(/[.,;]+$/,'');
+  return '';
+}
+
+/* Sjednoť oba zdroje (JSONP i CSV) do jedné podoby. */
+function normalize(records){
+  return records.map(o=>{
+    let pozn=pick(o,FIELD_ALIASES.poznamka);
+    if(pozn.toLowerCase()==='x') pozn='';
+    const rec={
+      katedra:pick(o,FIELD_ALIASES.katedra),
+      skola:pick(o,FIELD_ALIASES.skola),
+      mesto:pick(o,FIELD_ALIASES.mesto),
+      zeme:pick(o,FIELD_ALIASES.zeme),
+      web:asUrl(pick(o,FIELD_ALIASES.web)),
+      course:asUrl(pick(o,FIELD_ALIASES.course)),
+      ubytovani:asUrl(pick(o,FIELD_ALIASES.ubytovani)),
+      kvota:pick(o,FIELD_ALIASES.kvota),
+      jazyk:pick(o,FIELD_ALIASES.jazyk),
+      poznamka:pozn,
+      program:pick(o,FIELD_ALIASES.program)||'Erasmus'
+    };
+    rec._tags=deptTags(rec.katedra);
+    rec._zeme=rec.zeme.trim();
+    return rec;
+  }).filter(r=>r.skola);
+}
+
+const EMBEDDED_CSV = `katedra,skola,mesto,zeme,web,course,ubytovani,kvota,jazyk,poznamka,program
+KHI,Catholic University of Leuven,Leuven,Belgické království,https://www.kuleuven.be/english/kuleuven#,https://www.kuleuven.be/english/education/student/register/exchange/documents/courses-for-exchange-students,https://www.kuleuven.be/english/life-at-ku-leuven/housing,,,,Erasmus
+KPE,Catholic University of Leuven,Leuven,Belgické království,https://www.kuleuven.be/english/kuleuven#,https://www.kuleuven.be/english/education/student/register/exchange/documents/courses-for-exchange-students,https://www.kuleuven.be/english/life-at-ku-leuven/housing,,,,Erasmus
+NIZ,Catholic University of Leuven (campus Antwerp),Leuven,Belgické království,https://www.kuleuven.be/english/kuleuven#,https://www.kuleuven.be/english/education/student/register/exchange/documents/courses-for-exchange-students,https://www.kuleuven.be/english/life-at-ku-leuven/housing,,,campus Antwerp,Erasmus
+NIZ,Catholic University of Leuven (campus Brussels),Leuven,Belgické království,https://www.kuleuven.be/english/kuleuven#,https://www.kuleuven.be/english/education/student/register/exchange/documents/courses-for-exchange-students,https://www.kuleuven.be/english/life-at-ku-leuven/housing,,,campus Brussels,Erasmus
+NIZ,Catholic University of Leuven (campus Leuven),Leuven,Belgické království,https://www.kuleuven.be/english/kuleuven#,https://www.kuleuven.be/english/education/student/register/exchange/documents/courses-for-exchange-students,https://www.kuleuven.be/english/life-at-ku-leuven/housing,,,campus Leuven,Erasmus
+CJV,Free University of Brussels,Brussels,Belgické království,https://www.vub.be/en,https://www.vub.be/en/internationalisation-vub/international-relations-what-we-do-how-you-can-reach-us/exchange-erasmus-projects/come-vub-exchange,https://www.vub.be/en/internationalisation-vub/international-relations-what-we-do-how-you-can-reach-us/welcome-desk-international-office,,,,Erasmus
+NIZ,Free University of Brussels,Brussels,Belgické království,https://www.vub.be/en,https://www.vub.be/en/internationalisation-vub/international-relations-what-we-do-how-you-can-reach-us/exchange-erasmus-projects/come-vub-exchange,https://www.vub.be/en/internationalisation-vub/international-relations-what-we-do-how-you-can-reach-us/welcome-desk-international-office,,,,Erasmus
+DVU,Ghent University,Gent,Belgické království,https://www.ugent.be/en,https://studiekiezer.ugent.be/en/cursussen/zoek?zt&aj=2021&otc=EXCH&voMa&voPB&voAB&taal=EN,https://www.ugent.be/en/facilities/housing/exchange.htm,,,potvrzena e-mailem,Erasmus
+NIZ,Ghent University,Gent,Belgické království,https://www.ugent.be/en,https://studiekiezer.ugent.be/en/cursussen/zoek?zt&aj=2021&otc=EXCH&voMa&voPB&voAB&taal=EN,https://www.ugent.be/en/facilities/housing/exchange.htm,,,potvrzena e-mailem 18.04.2024,Erasmus
+NIZ,University of Antwerp,Antwerp,Belgické království,https://www.uantwerpen.be/en/,,,,,potvrzena e-mailem,Erasmus
+KOL,University of Liege,Liege,Belgické království,http://www.uliege.be/,,,,,,Erasmus
+KDU,Bulgarian Academy of Sciences,Sofia,Bulharská republika,https://www.bas.bg/,https://www.bas.bg/?page_id=48359&lang=en,,,,jenom pro STA mobility,Erasmus
+KFI,Sofia University 'St. Kliment Ohridski',Sofia,Bulharská republika,https://www.uni-sofia.bg/index.php/eng,https://erasmus.uni-sofia.bg/site/income/courses/,https://erasmus.uni-sofia.bg/site/income/during-your-mobility/accommodation/,,,,Erasmus
+KHI,Sofia University 'St. Kliment Ohridski',Sofia,Bulharská republika,https://www.uni-sofia.bg/index.php/eng,https://erasmus.uni-sofia.bg/site/income/courses/,https://erasmus.uni-sofia.bg/site/income/during-your-mobility/accommodation/,,,,Erasmus
+KSR,Sofia University 'St. Kliment Ohridski',Sofia,Bulharská republika,https://www.uni-sofia.bg/index.php/eng,https://erasmus.uni-sofia.bg/site/income/courses/,https://erasmus.uni-sofia.bg/site/income/during-your-mobility/accommodation/,,,,Erasmus
+KAA,St. Cyril and St. Methodius' University of Veliko Tarnovo,Veliko Tarnovo,Bulharská republika,https://www.uni-vt.bg/eng/,,,,,,Erasmus
+PCH,Technical University of Varna,Varna,Bulharská republika,https://fs.tu-varna.bg/,,,,,,Erasmus
+KEMS,University of Economics,Varna,Bulharská republika,https://www.ue-varna.bg/en/,,,,,,Erasmus
+KMU,Josip Juraj Strossmayer University of Osijek,Osijek,Chorvatská republika,https://www.unios.hr/en/,https://www.unios.hr/suradnja/medunarodna-suradnja/erasmus-incoming-students/university-units-and-erasmus-courses/,https://www.unios.hr/en/cooperation/international-cooperation/erasmus/upon-arrival/,,,,Erasmus
+DAS,Juraj Dobrila University of Pula,Pula,Chorvatská republika,https://www.unipu.hr/en,https://www.unipu.hr/en/visiting-students/course_catalogue_for_incoming_students,https://www.unipu.hr/en/visiting-students/accommodation,,,platná uzavřená papírově 09.11.2021,Erasmus
+KBH,University of Rijeka,Rijeka,Chorvatská republika,https://uniri.hr/en/home/,,,,,,Erasmus
+KBH,University of Split,Split,Chorvatská republika,https://www.unist.hr/en/,https://marjan.unist.hr/UserDocsImages/Me%C4%91unarodna%20suradnja/Incoming/COURSE%20CATALOGUE.pdf?vel=251458,https://www.unist.hr/erasmus-programme-countries-incoming-students/16549,,,,Erasmus
+KFI,University of Split,Split,Chorvatská republika,https://www.unist.hr/en/,https://marjan.unist.hr/UserDocsImages/Me%C4%91unarodna%20suradnja/Incoming/COURSE%20CATALOGUE.pdf?vel=251458,https://www.unist.hr/erasmus-programme-countries-incoming-students/16549,,,,Erasmus
+KOL,University of Zadar,Zadar,Chorvatská republika,https://www.unizd.hr/eng/,,,,,,Erasmus
+KRI,University of Zadar,Zadar,Chorvatská republika,https://www.unizd.hr/eng/,,,,,,Erasmus
+KSR,University of Zagreb,Zagreb,Chorvatská republika,http://www.unizg.hr/homepage/,,,,,,Erasmus
+KBH,University of Zagreb,Zagreb,Chorvatská republika,http://www.unizg.hr/homepage/,,,,,platná smlouva uzavřená papírově 14.11.2022,Erasmus
+KSU,University of Zagreb,Zagreb,Chorvatská republika,http://www.unizg.hr/homepage/,,,,,,Erasmus
+DAS,Tallinn University,Tallinn,Estonská republika,https://www.tlu.ee/en,,,,,,Erasmus
+KAA,Tallinn University,Tallinn,Estonská republika,https://www.tlu.ee/en,,,,,,Erasmus
+KFI,Tallinn University,Tallinn,Estonská republika,https://www.tlu.ee/en,,,,,,Erasmus
+KGN,Tallinn University,Tallinn,Estonská republika,https://www.tlu.ee/en,,,,,,Erasmus
+KHI,Tallinn University,Tallinn,Estonská republika,https://www.tlu.ee/en,,,,,,Erasmus
+KRF,Tallinn University,Tallinn,Estonská republika,https://www.tlu.ee/en,,,,,,Erasmus
+KSR,Tallinn University,Tallinn,Estonská republika,https://www.tlu.ee/en,,,,,platná smlouva uzavřená papírově 19.12.2022,Erasmus
+DAS,University of Tartu,Tartu,Estonská republika,https://ut.ee/en,,,,,,Erasmus
+KOL,University of Tartu,Tartu,Estonská republika,https://ut.ee/en,,,,,,Erasmus
+KSR,University of Tartu,Tartu,Estonská republika,https://ut.ee/en,,,,,platná smlouva uzavřená papírově 07.12..2022,Erasmus
+KEMS,LUT University,Lappeenranta,Finská republika,https://www.lut.fi/en,https://www.lut.fi/en/studies/exchange-studies,https://lahdentalot.fi/en,,angličtina B2,,Erasmus
+KMU,Savonia University of Applied Sciences,Kuopio,Finská republika,https://www.savonia.fi/en/study-with-us/other-studies/exchange/,https://opinto-opas.peppi.savonia.fi/offering/27,https://www.savonia.fi/en/study-with-us/for-students/new-degree-students/housing/,,amgiičtina B2,,Erasmus
+KSA,University of Eastern Finland,Kuopio,Finská republika,https://www.uef.fi/en,,,,,,Erasmus
+PCH,University of Eastern Finland,Kuopio,Finská republika,https://www.uef.fi/en,,,,,,Erasmus
+CJV,University of Helsinki,Helsinki,Finská republika,https://www.helsinki.fi/en,,,,,,Erasmus
+DAS,École Pratique des Hautes Études,Paris,Francouzská republika,https://www.ephe.psl.eu/,https://www.ephe.psl.eu/formations-conferences/masters-de-lephe-psl/master-etudes-asiatiques,https://www.ephe.psl.eu/en/international/international-students/international-students-preparing-your-arrival-france,,,,Erasmus
+KEMS,Institut de Préparation a l'Administration et a la Gestion,Paris,Francouzská republika,https://www.u-paris2.fr/fr/institut-de-preparation-ladministration-generale-de-paris-ipag-de-paris,,https://www.ipag.edu/en/finding-place-live,,,Smlouva je sjednaná s Campus Paris (ne s Campus Nice).,Erasmus
+KMU,Jean Monnet University,Saint-Étienne,Francouzská republika,https://www.univ-st-etienne.fr/en/index.html,,https://www.crous-nantes.fr/logement/cite-u-vaurouze/,,"většina kurzů je vyučován ve francouzštině, požadovaná úroveň B2",,Erasmus
+KEMS,Le Mans University,Le Mans,Francouzská republika,https://www.univ-lemans.fr/en/index.html,https://www.univ-lemans.fr/fr/formation/catalogue-des-formations.html,https://www.crous-nantes.fr/logement/cite-u-vaurouze/,,"francouzština, úroveň B2, někdy C1, více informací u Erasmus koordinátora daného programu v Le Mans",,Erasmus
+KRF,Le Mans University,Le Mans,Francouzská republika,https://www.univ-lemans.fr/en/index.html,https://www.univ-lemans.fr/fr/formation/catalogue-des-formations.html,https://www.crous-nantes.fr/logement/cite-u-vaurouze/,,"francouzština, úroveň B2, někdy C1, více informací u Erasmus koordinátora daného programu v Le Mans",,Erasmus
+KHI,Sorbonne Université (PARIS),Paris,Francouzská republika,https://lettres.sorbonne-universite.fr/en,https://formations-lettres.sorbonne-universite.fr/fr/index/formations/rechercher-des-formations.html,https://sciences.sorbonne-universite.fr/en/international-1/exchange-programs/incoming-mobility/housing,,"francouzština B2, ale C1 je více doporučováno zvláště pro studenty historie",Euroculture,Erasmus
+KRF,Université Bretagne Sud,Vannes,Francouzská republika,https://www.univ-ubs.fr/en/index.html,https://www.univ-ubs.fr/fr/formation-initiale-continue/formation-initiale/formations-diplomes.html,https://www.lokaviz.fr/,,,,Erasmus
+KPE,Université Catholique de Lille,Lille,Francouzská republika,https://www.univ-catholille.fr/en,,,,,,Erasmus
+KSA,Université Catholique de Lille,Lille,Francouzská republika,https://www.univ-catholille.fr/en,,,,,,Erasmus
+KFI,Université Côte d'Azur,Nice,Francouzská republika,https://univ-cotedazur.eu/,,,,,,Erasmus
+KHI,Université de Lorraine,Nancy,Francouzská republika,https://www.univ-lorraine.fr/en/univ-lorraine/,,,,,,Erasmus
+KRF,Université de Lorraine,Nancy,Francouzská republika,https://www.univ-lorraine.fr/en/univ-lorraine/,,,,,,Erasmus
+KAA,Université de Montpellier Paul-Valéry,Montpellier,Francouzská republika,https://www.univ-montp3.fr/en,,,,,potvrzena e-mailem,Erasmus
+KGN,Université de Montpellier Paul-Valéry,Montpellier,Francouzská republika,https://www.univ-montp3.fr/en,,,,,pouze STA mobility,Erasmus
+KEMS,Université de Perpignan Via Domitia,Perpignan,Francouzská republika,https://www.univ-perp.fr/en,,,,,,Erasmus
+KRF,Université de Perpignan Via Domitia,Perpignan,Francouzská republika,https://www.univ-perp.fr/en,,,,,,Erasmus
+KAA,Université de Poitiers,Poitier,Francouzská republika,https://www.univ-poitiers.fr/en/,,,,,,Erasmus
+KRF,Université de Poitiers,Poitier,Francouzská republika,https://www.univ-poitiers.fr/en/,,,,,,Erasmus
+KFI,Universite Grenoble Alpes,Grenoble,Francouzská republika,https://www.univ-grenoble-alpes.fr/english/,,,,,,Erasmus
+KHI,Universite Grenoble Alpes,Grenoble,Francouzská republika,https://www.univ-grenoble-alpes.fr/english/,,,,,,Erasmus
+KAA,Université Paris X-Ouest Nanterre La Défense,Paris,Francouzská republika,https://university.parisnanterre.fr/,,,,,,Erasmus
+KRF,Université Paris X-Ouest Nanterre La Défense,Paris,Francouzská republika,https://university.parisnanterre.fr/,,,,,,Erasmus
+KEMS,University of Clermont Auvergne,Clermont-Ferrand,Francouzská republika,https://www.uca.fr/en,https://www.uca.fr/en/mobilities/incoming-mobilities/student/studying-within-an-exchange-program/courses-in-english,https://www.uca.fr/en/mobilities/incoming-mobilities/student/hebergement,,,,Erasmus
+KFI,University of Clermont Auvergne,Clermont-Ferrand,Francouzská republika,https://www.uca.fr/en,https://www.uca.fr/en/mobilities/incoming-mobilities/student/studying-within-an-exchange-program/courses-in-english,https://www.uca.fr/en/mobilities/incoming-mobilities/student/hebergement,,,smlouva platná pouze do 2026/2027,Erasmus
+KHI,University of Clermont Auvergne,Clermont-Ferrand,Francouzská republika,https://www.uca.fr/en,https://www.uca.fr/en/mobilities/incoming-mobilities/student/studying-within-an-exchange-program/courses-in-english,https://www.uca.fr/en/mobilities/incoming-mobilities/student/hebergement,,,smlouva platná pouze do 2026/2027,Erasmus
+KRF,University of Clermont Auvergne,Clermont-Ferrand,Francouzská republika,https://www.uca.fr/en,https://www.uca.fr/en/mobilities/incoming-mobilities/student/studying-within-an-exchange-program/courses-in-english,https://www.uca.fr/en/mobilities/incoming-mobilities/student/hebergement,,,,Erasmus
+KEMS,University of Lille,Lille,Francouzská republika,https://international.univ-lille.fr/en/come-to-the-university-of-lille/,,,,,,Erasmus
+KPE,University of Lille,Lille,Francouzská republika,https://international.univ-lille.fr/en/come-to-the-university-of-lille/,,,,,,Erasmus
+KRF,University of Lille,Lille,Francouzská republika,https://international.univ-lille.fr/en/come-to-the-university-of-lille/,,,,,,Erasmus
+KRF,University of Reunion Island,Saint-Denis,Francouzská republika,https://search.isepstudyabroad.org/University/Detail/d39fa913-744c-4bf6-bc39-c126a504b53a,,,,,,Erasmus
+KFI,University of Strasbourg,Strasbourg,Francouzská republika,https://en.unistra.fr/,,,,,,Erasmus
+KHI,University of Strasbourg,Strasbourg,Francouzská republika,https://en.unistra.fr/,,,,,Euroculture,Erasmus
+KRF,University Paris XII-Est Créteil Val de Marne,Paris,Francouzská republika,https://www.en.u-pec.fr/,,,,,,Erasmus
+KPE,University Paris XII-Est Créteil Val de Marne,Paris,Francouzská republika,https://www.en.u-pec.fr/,,,,,,Erasmus
+KRF,University Sorbonne Paris XIII-Nord,Paris,Francouzská republika,https://en.univ-paris13.fr/,,,,,"Nomination and application deadlines are the same, but the partner is a bit flexible when receiving later applications.",Erasmus
+KMU,National university of Ireland,Maynooth,Irsko,https://www.maynoothuniversity.ie/,https://www.maynoothuniversity.ie/international/what-can-i-study-and-how-do-i-apply,https://www.maynoothuniversity.ie/international/accommodation-incoming-students,,angličtina B2,,Erasmus
+KSA,National university of Ireland,Maynooth,Irsko,https://www.maynoothuniversity.ie/,https://www.maynoothuniversity.ie/international/what-can-i-study-and-how-do-i-apply,https://www.maynoothuniversity.ie/international/accommodation-incoming-students,,angličtina B2,,Erasmus
+KPE,University of Limerick,Limerick,Irsko,https://www.ul.ie/,,,,,potvrzena e-mailem,Erasmus
+KRI,'Gabriele d'Annunzio' University Chieti Pescara,Chieti,Italská republika,https://en.unich.it/,https://en.unich.it/teaching/academic-programs,https://chietipescara.esn.it,,,,Erasmus
+DVU,Alma Mater Studiorum - Universita di Bologna,Bologna,Italská republika,https://www.unibo.it/en/homepage,https://www.unibo.it/en/study/course-units-transferable-skills-moocs/course-unit-catalogue,https://www.saisaccommodation.it/en/,,,,Erasmus
+KDU,Alma Mater Studiorum - Universita di Bologna,Bologna,Italská republika,https://www.unibo.it/,https://www.unibo.it/en/study/course-units-transferable-skills-moocs/course-unit-catalogue,https://www.saisaccommodation.it/en/,,,,Erasmus
+KOL,Alma Mater Studiorum - Universita di Bologna,Bologna,Italská republika,https://www.unibo.it/en/homepage,https://www.unibo.it/en/study/course-units-transferable-skills-moocs/course-unit-catalogue,https://www.saisaccommodation.it/en/,,,,Erasmus
+KRI,Alma Mater Studiorum - Universita di Bologna,Bologna,Italská republika,https://www.unibo.it/en/homepage,https://www.unibo.it/en/study/course-units-transferable-skills-moocs/course-unit-catalogue,https://www.saisaccommodation.it/en/,,,,Erasmus
+KAA,Ca Foscari University,Venice,Italská republika,https://www.unive.it/pag/13526,https://www.unive.it/data/9639/,https://www.unive.it/pag/19768/,,,,Erasmus
+KMU,Conservatorio San Pietro a Majella,Napoli,Italská republika,https://www.sanpietroamajella.it/,https://www.sanpietroamajella.it/wp-content/uploads/2021/06/SAN_PIETRO_A_MAJELLA_COURSE_CATALOGUE.pdf,,,,,Erasmus
+KRI,Roma Tre University,Rome,Italská republika,https://www.uniroma3.it/en/,https://www.uniroma3.it/en/study/course-catalogue/,https://www.uniroma3.it/en/services/services-for-students/daily-life/accommodation-service/,,italština B1,"podepsána papírově, partner není na EWP",Erasmus
+KRS,Roma Tre University,Rome,Italská republika,https://www.uniroma3.it/en/,https://www.uniroma3.it/en/study/course-catalogue/,https://www.uniroma3.it/en/services/services-for-students/daily-life/accommodation-service/,,italština B1,"podepsána papírově, partner není na EWP",Erasmus
+DVU,Sapienza University,Rome,Italská republika,https://www.uniroma1.it/en/pagina-strutturale/home,https://corsidilaurea.uniroma1.it/en,https://www.uniroma1.it/en/pagina/student-housing,,němčina B2,potvrzena e-mailem,Erasmus
+KBH,Sapienza University,Rome,Italská republika,https://www.uniroma1.it/en/pagina-strutturale/home,https://corsidilaurea.uniroma1.it/en,https://www.uniroma1.it/en/pagina/student-housing,,,potvrzena e-mailem,Erasmus
+KHI,Sapienza University,Rome,Italská republika,https://www.uniroma1.it/en/pagina-strutturale/home,https://corsidilaurea.uniroma1.it/en,https://www.uniroma1.it/en/pagina/student-housing,,,potvrzena e-mailem,Erasmus
+KRI,Sapienza University,Rome,Italská republika,https://www.uniroma1.it/en/pagina-strutturale/home,https://corsidilaurea.uniroma1.it/en,https://www.uniroma1.it/en/pagina/student-housing,,,potvrzena e-mailem,Erasmus
+KSA,Sapienza University,Rome,Italská republika,https://www.uniroma1.it/en/pagina-strutturale/home,https://corsidilaurea.uniroma1.it/en,https://www.uniroma1.it/en/pagina/student-housing,,,potvrzena e-mailem,Erasmus
+KRI,Universita Cattolica Sacro Cuore,Milan,Italská republika,https://international.unicatt.it/ucscinternational-home,,,,,,Erasmus
+DVU,Universita degli Studi di Milano,Milan,Italská republika,https://www.unimi.it/en,,,,,,Erasmus
+KPE,Universita degli Studi di Milano,Milan,Italská republika,https://www.unimi.it/en,,,,,platná smlouva uzavřená papírově 22.05.2024,Erasmus
+KRI,Universita degli Studi di Milano,Milan,Italská republika,https://www.unimi.it/en,,,,,,Erasmus
+KRI,Universita degli Studi di Milano,Milan,Italská republika,https://www.unimi.it/en,,,,,,Erasmus
+KSR,Universita degli Studi di Milano,Milan,Italská republika,https://www.unimi.it/en,,,,,platná smlouva uzavřená papírově 20.05.2024,Erasmus
+KSR,Universita degli Studi di Milano,Milan,Italská republika,https://www.unimi.it/en,,,,,platná smlouva uzavřená papírově 20.05.2024,Erasmus
+KRI,Universita degli Studi di Napoli Federico II,Naples,Italská republika,https://www.international.unina.it/,,,,,,Erasmus
+KEMS,Universita degli Studi di Palermo,Palermo,Italská republika,https://www.unipa.it/mobilita/en/,https://offertaformativa.unipa.it/offweb/public/corso/ricercaSemplice.seam,https://www.unipa.it/mobilita/en/useful-information/accomodation/,,,,Erasmus
+KFI,Universita degli Studi di Palermo,Palermo,Italská republika,https://www.unipa.it/mobilita/en/,https://offertaformativa.unipa.it/offweb/public/corso/ricercaSemplice.seam,https://www.unipa.it/mobilita/en/useful-information/accomodation/,,,,Erasmus
+KPE,Universita degli Studi di Palermo,Palermo,Italská republika,https://www.unipa.it/mobilita/en/,https://offertaformativa.unipa.it/offweb/public/corso/ricercaSemplice.seam,https://www.unipa.it/mobilita/en/useful-information/accomodation/,,,,Erasmus
+DVU,Universita degli Studi di Parma,Parma,Italská republika,https://www.unipr.it/en,,,,,,Erasmus
+KPE,Universita degli Studi di Parma,Parma,Italská republika,https://www.unipr.it/en,,,,,,Erasmus
+KRI,Universita degli Studi di Parma,Parma,Italská republika,https://www.unipr.it/en,,,,,,Erasmus
+CJV,Universita degli Studi di Udine,Udine,Italská republika,https://www.uniud.it/en/uniud-international?set_language=en,,,,,,Erasmus
+KBH,Universita degli Studi di Udine,Udine,Italská republika,https://www.uniud.it/en/uniud-international?set_language=en,,,,,,Erasmus
+KHI,Universita degli Studi di Udine,Udine,Italská republika,https://www.uniud.it/en/uniud-international?set_language=en,,,,,Euroculture,Erasmus
+KRI,Universita degli Studi di Udine,Udine,Italská republika,https://www.uniud.it/en/uniud-international?set_language=en,,,,,,Erasmus
+KGN,Universita degli Studi di Urbino Carlo Bo,Urbino,Italská republika,https://www.uniurb.it/international,https://www.uniurb.it/international/mobility-coming-to-urbino/course-catalogue,https://www.uniurb.it/international/welcome-to-urbino/student-life/accommodation,,,,Erasmus
+KRI,"University ""Suor Orsola Benincasa""",Napoli,Italská republika,https://www.unisob.na.it/?vr=1&lg=en,,,,,,Erasmus
+KRI,University for Foreigners of Siena,Siena,Italská republika,https://en.unisi.it/,,,,,,Erasmus
+KRI,University for Foreigners Perugia,Perugia,Italská republika,https://www.unistrapg.it/it,,,,,,Erasmus
+KAE,University of Bari Aldo Moro,Bari,Italská republika,https://www.uniba.it/en,https://www.uniba.it/en/courses/courses-1,https://bari.esn.it/en/erasmus-bari,,,,Erasmus
+KAE,University of Bari Aldo Moro,Bari,Italská republika,https://www.uniba.it/en,https://www.uniba.it/en/courses/courses-1,https://bari.esn.it/en/erasmus-bari,,,,Erasmus
+KRI,University of Bari Aldo Moro,Bari,Italská republika,https://www.uniba.it/en,https://www.uniba.it/en/courses/courses-1,https://bari.esn.it/en/erasmus-bari,,,,Erasmus
+KRI,University of Cagliari,Cagliari,Italská republika,https://en.unica.it/en,,,,,,Erasmus
+KRI,University of Florence,Firenze,Italská republika,https://www.unifi.it/changelang-eng.html,,,,,,Erasmus
+DVU,University of L'Aquila,L'Aquila,Italská republika,https://scienzeumane.univaq.it,,,,,,Erasmus
+KRI,University of Macerata,Macerata,Italská republika,https://www.unimc.it/en,,,,,potvrzena e-mailem,Erasmus
+DAS,"University of Naples ""L'Orientale""",Naples,Italská republika,https://www.unior.it/index2.php?content_id=17717&content_id_start=4&titolo=l-orientale&parLingua=ENG,,,,,,Erasmus
+KEMS,University of Naples Parthenope,Napoli,Italská republika,https://en.uniparthenope.it/,,,,,,Erasmus
+KBH,University of Padua,Padova,Italská republika,https://www.unipd.it/en/,,,,,,Erasmus
+KFI,University of Padua,Padova,Italská republika,https://www.unipd.it/en/,,,,,,Erasmus
+PCH,University of Padua,Padova,Italská republika,https://www.unipd.it/en/,,,,,,Erasmus
+KSO,University of Pavia,Pavia,Italská republika,https://web-en.unipv.it/,,,,,,Erasmus
+KRI,University of Sassari,Sassari,Italská republika,https://en.uniss.it/,,,,,platná smlouva uzavřená papírově 12.03..2024,Erasmus
+KOL,University of Turin,Turin,Italská republika,https://en.unito.it/,,,,,potvrzena e-mailem,Erasmus
+KRI,University of Turin,Turin,Italská republika,https://en.unito.it/,,,,,potvrzena e-mailem,Erasmus
+KEMS,Casa College,Nicosia,Kyperská republika,https://www.casacollege.ac.cy/,https://www.casacollege.ac.cy/bsc-hotel-administration/,https://www.casacollege.ac.cy/accommodation-request-form/,,,,Erasmus
+PCH,University of Cyprus,Nicosia,Kyperská republika,https://www.ucy.ac.cy/?lang=en,,,,,,Erasmus
+KSA,Klaipeda University,Klaipeda,Litevská republika,https://www.ku.lt/en/,https://www.ku.lt/en/studies-admission/erasmus-mobility/erasmus-for-incoming-students,https://www.ku.lt/en/student-guide/accommodation,,,,Erasmus
+DAS,Mykolas Romeris University,Vilnius,Litevská republika,https://www.mruni.eu/,https://www.mruni.eu/en/university/internationalization/erasmus-and-exchange-studies-incoming/,https://www.mruni.eu/en/university/internationalization/practical-information-for-incoming-students/,,,,Erasmus
+KOL,Vilnius University,Vilnius,Litevská republika,https://www.vu.lt/en/,,,,,,Erasmus
+KSA,Vilnius University,Vilnius,Litevská republika,https://www.vu.lt/en/,,,,,,Erasmus
+KZU,Vilnius University,Vilnius,Litevská republika,https://www.vu.lt/en/,,,,,,Erasmus
+KDU,Vytautas Magnus University,Kaunas,Litevská republika,https://www.vdu.lt/en/,,,,,,Erasmus
+KPE,Vytautas Magnus University,Kaunas,Litevská republika,https://www.vdu.lt/en/,,,,,,Erasmus
+PCH,Vytautas Magnus University,Kaunas,Litevská republika,https://www.vdu.lt/en/,,,,,,Erasmus
+KSR,Daugavpils University,Daugavpils,Lotyšská republika,https://du.lv/en/,https://du.lv/en/international-cooperation/erasmus-mobility/erasmus-mobility-to-programm-countries/,https://du.lv/en/international-cooperation/erasmus-mobility/erasmus-mobility-to-programm-countries/,,,,Erasmus
+DAS,University of Latvia,Riga,Lotyšská republika,https://www.lu.lv/en/,,,,,,Erasmus
+KSR,University of Latvia,Riga,Lotyšská republika,,,,,,,Erasmus
+KZU,University of Latvia,Riga,Lotyšská republika,https://www.lu.lv/en/,,,,,,Erasmus
+CJV,University of Luxembourg,Luxembourg,Lucemburské velkovévodství,https://wwwen.uni.lu/,,,,,,Erasmus
+KGN,University of Luxembourg,Luxembourg,Lucemburské velkovévodství,https://wwwen.uni.lu/,,,,,,Erasmus
+KRP,Eötvös Loránd University,Budapest,Maďarsko,https://www.elte.hu/en/,https://www.elte.hu/en/incoming-mobility/courses,https://www.elte.hu/en/arrange-housing,,,potvrzena e-mailem,Erasmus
+NIZ,Eötvös Loránd University,Budapest,Maďarsko,https://www.elte.hu/en/,https://www.elte.hu/en/incoming-mobility/courses,https://www.elte.hu/en/arrange-housing,,,,Erasmus
+KHI,Eötvös Loránd University,Budapest,Maďarsko,https://www.elte.hu/en/,https://www.elte.hu/en/incoming-mobility/courses,https://www.elte.hu/en/arrange-housing,,,pouze pro STA/STT mobility,Erasmus
+JUD,Eötvös Loránd University,Budapest,Maďarsko,https://www.elte.hu/en/,https://www.elte.hu/en/incoming-mobility/courses,https://www.elte.hu/en/arrange-housing,,,pouze pro STA/STT mobility,Erasmus
+NIZ,Károli Gáspár University of the Reformed Church,Budapest,Maďarsko,https://english.kre.hu/,https://english.kre.hu/index.php/exchange-students,https://english.kre.hu/index.php/exchange-students,,,,Erasmus
+KPE,Pázmány Péter Catholic University,Budapest,Maďarsko,https://ppke.hu/en,https://btk.ppke.hu/en/courses-6,https://ppke.hu/en/housing-16,,,,Erasmus
+KRI,Pázmány Péter Catholic University,Budapest,Maďarsko,https://ppke.hu/en,https://btk.ppke.hu/en/courses-6,https://ppke.hu/en/housing-16,,,,Erasmus
+KAA,University of Debrecen,Debrecen,Maďarsko,https://www.edu.unideb.hu/,,,,,,Erasmus
+KSA,University of Debrecen,Debrecen,Maďarsko,https://www.edu.unideb.hu/,,,,,,Erasmus
+NIZ,University of Debrecen,Debrecen,Maďarsko,https://www.edu.unideb.hu/,,,,,potvrzena e-mailem,Erasmus
+KAA,University of Miskolc,Miskolc,Maďarsko,https://www.uni-miskolc.hu/en,https://erasmus.uni-miskolc.hu/,https://www.uni-miskolc.hu/en/student-life/life-at-the-campus/housing/um-housing-partners/,,,,Erasmus
+KSA,University of Pécs,Pécs,Maďarsko,https://international.pte.hu/,,,,,,Erasmus
+PCH,University of Szeged,Szeged,Maďarsko,https://u-szeged.hu/english,,,,,,Erasmus
+KAA,University of Malta,Msida,Maltská republika,https://www.um.edu.mt/,,,,,for 1 STA mobility only,Erasmus
+KFI,University of Malta,Msida,Maltská republika,https://www.um.edu.mt/,,,,,,Erasmus
+PCH,University of Malta,Msida,Maltská republika,https://www.um.edu.mt/,,,,,,Erasmus
+DAS,Leiden University,Leiden,Nizozemsko,https://www.universiteitleiden.nl/en,https://studiegids.universiteitleiden.nl/modules?exchange=true,https://www.universiteitleiden.nl/en/education/international-students/prepare-your-stay/housing,,,pouze pro STA/STT mobility,Erasmus
+NIZ,Radboud University,Nijmegen,Nizozemsko,https://www.ru.nl/en,https://www.ru.nl/en/education/more-education-and-training/courses-for-exchange-students/exchange-courses-and-contact-information,https://www.ru.nl/en/students/international-students/housing,,,potvrzena e-mailem,Erasmus
+KPE,The Hague University of Applied Sciences,The Hague,Nizozemsko,https://www.thehagueuniversity.com/,,,,,,Erasmus
+KDU,University of Groningen,Groningen,Nizozemsko,https://www.rug.nl/?lang=en,,,,,,Erasmus
+KFI,University of Groningen,Groningen,Nizozemsko,https://www.rug.nl/?lang=en,,,,,,Erasmus
+KHI,University of Groningen,Groningen,Nizozemsko,https://www.rug.nl/?lang=en,,,,,,Erasmus
+KHI,University of Groningen,Groningen,Nizozemsko,https://www.rug.nl/?lang=en,,,,,Euroculture,Erasmus
+NIZ,University of Groningen,Groningen,Nizozemsko,https://www.rug.nl/?lang=en,,,,,,Erasmus
+PCH,University of Groningen,Groningen,Nizozemsko,https://www.rug.nl/?lang=en,,,,,,Erasmus
+KPE/KEMS,Vrije Universiteit Amsterdam,Amsterdam,Nizozemsko,https://vu.nl/en/education/exchange?slug=exchange,,,,,společná smlouva pro KPE a KEMS,Erasmus
+KHI,University of Oslo,Oslo,Norské království,https://www.uio.no/english/studies/admission/exchange/erasmus/,,,,,,Erasmus
+DAS,Adam Mickiewicz University in Poznań,Poznań,Polská republika,https://amu.edu.pl/en,https://amupie.amu.edu.pl/?t=amupie&year=2026%2F2027,,,,,Erasmus
+DAS,Adam Mickiewicz University in Poznań,Poznań,Polská republika,https://amu.edu.pl/en,https://amupie.amu.edu.pl/?t=amupie&year=2026%2F2027,,,,,Erasmus
+KBH,Adam Mickiewicz University in Poznań,Poznań,Polská republika,https://amu.edu.pl/en,https://amupie.amu.edu.pl/?t=amupie&year=2026%2F2027,,,,,Erasmus
+KSO,Adam Mickiewicz University in Poznań,Poznań,Polská republika,https://amu.edu.pl/en,https://amupie.amu.edu.pl/?t=amupie&year=2026%2F2027,,,,,Erasmus
+NIZ,Adam Mickiewicz University in Poznań,Poznań,Polská republika,https://amu.edu.pl/en,https://amupie.amu.edu.pl/?t=amupie&year=2026%2F2027,,,,platná smlouva uzavřená papírově 29.11.2022,Erasmus
+KSO,Akademia Pomorska w Słupsku,Slupsk,Polská republika,https://www.apsl.edu.pl/,https://www.upsl.edu.pl/international/international-programs/course-catalogue-for-erasmus,https://www.upsl.edu.pl/international/for-students/accommodation,,,,Erasmus
+KDU,Akademia Sztuki w Szczecinie,Szczecin,Polská republika,https://www.akademiasztuki.eu/,https://akademiasztuki.eu/Product/media-art-68dcf899c74cd,,,,,Erasmus
+KMU,Cardinal Wyszyński University in Warsaw,Warsaw,Polská republika,https://uksw.edu.pl/,https://ects.uksw.edu.pl/en/courses/,https://dwm.uksw.edu.pl/en/welcome-centre/accomodation/,,,jenom pro STA mobility,Erasmus
+KRI,Cardinal Wyszyński University in Warsaw,Warsaw,Polská republika,https://uksw.edu.pl/,https://ects.uksw.edu.pl/en/courses/,https://dwm.uksw.edu.pl/en/welcome-centre/accomodation/,,,,Erasmus
+DAS,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,potvrzena e-mailem,Erasmus
+DVU,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,platná smlouva uzavřená papírově 14.08.2024,Erasmus
+KAA,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,,Erasmus
+KBH,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,,Erasmus
+KFI,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,,Erasmus
+KHI,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,Euroculture,Erasmus
+KMU,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,,Erasmus
+KPE,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,,Erasmus
+KRI,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,,Erasmus
+KSR+KSU,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,,Erasmus
+KSU,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,,Erasmus
+PCH,Jagiellonian University in Kraków,Cracow,Polská republika,https://en.uj.edu.pl/en,https://internationalstudents.uj.edu.pl/en_GB/wymiany/kursy,https://akademiki.uj.edu.pl/en_GB/cudzoziemcy,,,,Erasmus
+KSO,John Paul II Catholic University of Lublin,Lublin,Polská republika,https://www.kul.pl/kul,"https://www.kul.pl/selected-courses-in-english,2531.html","https://www.kul.pl/accommodation,art_21803.html",,,,Erasmus
+NIZ,John Paul II Catholic University of Lublin,Lublin,Polská republika,https://www.kul.pl/kul,"https://www.kul.pl/selected-courses-in-english,2531.html","https://www.kul.pl/accommodation,art_21803.html",,,potvrzena e-mailem,Erasmus
+KMU,John Paul II Catholic University of Lublin,Lublin,Polská republika,https://www.kul.pl/kul,"https://www.kul.pl/selected-courses-in-english,2531.html","https://www.kul.pl/accommodation,art_21803.html",,,,Erasmus
+KMU,Karol Szymanowski Academy of Music in Katowice,Katowice,Polská republika,https://am.katowice.pl/?a=am-katowice-en,https://am.katowice.pl/informacje/information-on-the-institution-list-of-courses-offered-1214,https://am.katowice.pl/informacje/general-information-for-students-living-costs-accommodation-meals-1244,,,,Erasmus
+KAA,Kujawy and Pomorze University in Bydgoszcz,Bydgoszcz,Polská republika,https://akp.bydgoszcz.pl/en,https://akp.info.pl/erasmus/list-of-courses-english-philology/,https://akp.info.pl/incoming-students/accommodation-dormitories/,,,jenom na STA mobility,Erasmus
+KEMS,Kujawy and Pomorze University in Bydgoszcz,Bydgoszcz,Polská republika,https://akp.bydgoszcz.pl/en,https://akp.info.pl/list-of-courses-economics/,https://akp.info.pl/incoming-students/accommodation-dormitories/,,,,Erasmus
+KHI,Maria Curie-Sklodowska University,Lublin,Polská republika,https://www.umcs.pl/en/,"https://www.umcs.pl/en/list-of-courses,5022.htm","https://www.umcs.pl/en/accommodation,15853.htm",,,,Erasmus
+KRP,Maria Curie-Sklodowska University,Lublin,Polská republika,https://www.umcs.pl/en/,"https://www.umcs.pl/en/list-of-courses,5022.htm","https://www.umcs.pl/en/accommodation,15853.htm",,,pouze pro STA mobility,Erasmus
+KSO,Maria Curie-Sklodowska University,Lublin,Polská republika,https://www.umcs.pl/en/,"https://www.umcs.pl/en/list-of-courses,5022.htm","https://www.umcs.pl/en/accommodation,15853.htm",,,,Erasmus
+PCH,Maria Grzegorzewska University,Warsaw,Polská republika,http://www.aps.edu.pl/University/,https://www.aps.edu.pl/erasmusplus/,https://erasmusplay.com/en/warszawa/erasmus-accommodation,,,,Erasmus
+DAS,Nicolaus Copernicus University in Toruń,Toruń,Polská republika,https://www.umk.pl/en/,https://www.umk.pl/en/study-and-courses/mobility/erasmus/courses/,https://www.umk.pl/en/study-and-courses/mobility/erasmus/students/accommodation/,,,,Erasmus
+KSO,Nicolaus Copernicus University in Toruń,Toruń,Polská republika,https://www.umk.pl/en/,https://www.umk.pl/en/study-and-courses/mobility/erasmus/courses/,https://www.umk.pl/en/study-and-courses/mobility/erasmus/students/accommodation/,,,,Erasmus
+KSR,Nicolaus Copernicus University in Toruń,Toruń,Polská republika,https://www.umk.pl/en/,https://www.umk.pl/en/study-and-courses/mobility/erasmus/courses/,https://www.umk.pl/en/study-and-courses/mobility/erasmus/students/accommodation/,,,,Erasmus
+KEMS,Opole University of Technology,Opole,Polská republika,https://po.edu.pl/?lang=en,https://ects.po.edu.pl/en/courses/,https://dwm.po.edu.pl/incoming-students/?lang=en,,angličtina B2,,Erasmus
+KSO,State University of Applied Sciences in Racibórz,Racibórz,Polská republika,https://akademiarac.edu.pl/,,,,,potvrzena e-mailem,Erasmus
+PCH,SWPS University of Social Sciences and Humanities,Warsaw,Polská republika,https://english.swps.pl/,,,,,,Erasmus
+KHI,University of Bialystok,Bialystok,Polská republika,https://uwb.edu.pl/en/,,,,,,Erasmus
+KZU,University of Gdańsk,Gdańsk,Polská republika,https://en.ug.edu.pl/,,,,,,Erasmus
+DAS,University of Lodz,Łódź,Polská republika,https://www.uni.lodz.pl/,https://www.uni.lodz.pl/en/mobility-study-programmes-and-courses,https://www.uni.lodz.pl/en/students-zone/campus/dormitories,,,platnost od AR 2025/26,Erasmus
+KAA,University of Lodz,Łódź,Polská republika,https://www.uni.lodz.pl/en,https://www.uni.lodz.pl/en/mobility-study-programmes-and-courses,https://www.uni.lodz.pl/en/students-zone/campus/dormitories,,,,Erasmus
+KDU,University of Lodz,Łódź,Polská republika,https://www.uni.lodz.pl/,https://www.uni.lodz.pl/en/mobility-study-programmes-and-courses,https://www.uni.lodz.pl/en/students-zone/campus/dormitories,,,,Erasmus
+KSA,University of Lodz,Łódź,Polská republika,https://www.uni.lodz.pl/en/,https://www.uni.lodz.pl/en/mobility-study-programmes-and-courses,https://www.uni.lodz.pl/en/students-zone/campus/dormitories,,,,Erasmus
+KSO,University of Lodz,Łódź,Polská republika,https://www.uni.lodz.pl/en/,https://www.uni.lodz.pl/en/mobility-study-programmes-and-courses,https://www.uni.lodz.pl/en/students-zone/campus/dormitories,,,,Erasmus
+KZU,University of Lodz,Łódź,Polská republika,https://www.uni.lodz.pl/en/,https://www.uni.lodz.pl/en/mobility-study-programmes-and-courses,https://www.uni.lodz.pl/en/students-zone/campus/dormitories,,,,Erasmus
+KZU,University of Lodz,Łódź,Polská republika,https://www.uni.lodz.pl/en/,https://www.uni.lodz.pl/en/mobility-study-programmes-and-courses,https://www.uni.lodz.pl/en/students-zone/campus/dormitories,,,,Erasmus
+KSA,University of Lower Silesia,Wrocław,Polská republika,https://www.dsw.edu.pl/english1,,,,,,Erasmus
+KEMS,University of Opole,Opole,Polská republika,https://uni.opole.pl/en,,,,,,Erasmus
+KHI,University of Opole,Opole,Polská republika,https://uni.opole.pl/en,,,,,,Erasmus
+KSA,University of Opole,Opole,Polská republika,https://uni.opole.pl/en,,,,,,Erasmus
+KSO,University of Opole,Opole,Polská republika,https://uni.opole.pl/en,,,,,,Erasmus
+KZU,University of Opole,Opole,Polská republika,https://uni.opole.pl/en,,,,,,Erasmus
+PCH,University of Opole,Opole,Polská republika,https://uni.opole.pl/en,,,,,,Erasmus
+KHI,University of Rzeszów,Rzeszow,Polská republika,https://www.ur.edu.pl/en,,,,,,Erasmus
+KSA,University of Rzeszów,Rzeszow,Polská republika,https://www.ur.edu.pl/en,,,,,,Erasmus
+KSO,University of Siedlce,Siedlce,Polská republika,https://study.gov.pl/university/siedlce-university-natural-sciences-and-humanities,,,,,,Erasmus
+KFI,University of Silesia in Katowice,Katowice,Polská republika,http://english.us.edu.pl/,,,,,,Erasmus
+KSA,University of Silesia in Katowice,Katowice,Polská republika,http://english.us.edu.pl/,,,,,,Erasmus
+KSO,University of Silesia in Katowice,Katowice,Polská republika,http://english.us.edu.pl/,,,,,Institute of Literary Studies,Erasmus
+KSO,University of Silesia in Katowice,Katowice,Polská republika,http://english.us.edu.pl/,,,,,Institute of Linguistic,Erasmus
+PCH,University of Silesia in Katowice,Katowice,Polská republika,http://english.us.edu.pl/,,,,,,Erasmus
+KRS,University of Szczecin,Szczecin,Polská republika,https://en.usz.edu.pl/,,,,,,Erasmus
+KSR,University of Szczecin,Szczecin,Polská republika,https://en.usz.edu.pl/,,,,,,Erasmus
+KEMS,University of Warmia and Mazury in Olsztyn,Olsztyn,Polská republika,https://uwm.edu.pl/,,,,,,Erasmus
+KDU,University of Warsaw,Warsaw,Polská republika,https://en.uw.edu.pl/,,,,,včetně BIPu,Erasmus
+KFI,University of Warsaw,Warsaw,Polská republika,https://en.uw.edu.pl/,,,,,,Erasmus
+KHI,University of Warsaw,Warsaw,Polská republika,https://en.uw.edu.pl/,,,,,,Erasmus
+KSO,University of Warsaw,Warsaw,Polská republika,https://en.uw.edu.pl/,,,,,,Erasmus
+KSU,University of Warsaw,Warsaw,Polská republika,https://en.uw.edu.pl/,,,,,,Erasmus
+DVU,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+KBH,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+KFI,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,potvrzena e-mailem,Erasmus
+KGN,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+KHI,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,historie,Erasmus
+KHI - archeologie,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,archeologie,Erasmus
+KKF,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+KSO,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+KSR,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+KSU,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+KZU,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+KZU,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+NIZ,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,platná smlouva uzavřená papírově 13.05.2024,Erasmus
+DAS,University of Wrocław,Wrocław,Polská republika,https://uwr.edu.pl/,,,,,,Erasmus
+PCH,Witelon State University of Applied Sciences in Legnica,Legnica,Polská republika,https://erasmus.collegiumwitelona.pl/incoming-students,,,,,,Erasmus
+KEMS,Wroclaw University of Economics and Business,Wrocław,Polská republika,https://www.ue.wroc.pl/university/,,,,,,Erasmus
+KMU,Instituto Politécnico de Coimbra,Coimbra,Portugalská republika,https://www.ipc.pt/ipc/en/,https://www.esec.pt/en/courses-en/,https://esncoimbra.org/accommodation,,,,Erasmus
+PCH,Instituto Politécnico de Coimbra,Coimbra,Portugalská republika,https://www.ipc.pt/ipc/en/,https://www.esec.pt/en/courses-en/,https://esncoimbra.org/accommodation,,,obnovení zrušené smlouvy,Erasmus
+KEMS,ISG Business & Economics School,Lisboa,Portugalská republika,https://erasmus.uj.edu.pl/en_GB/incoming,https://www.isg.pt/lista-licenciaturas/,https://www.findunirooms.com/portugal/isg-instituto-superior-de-gestao/,,,,Erasmus
+KEMS,Polytechnic Institute of Santarém,Santarem,Portugalská republika,https://www.ipsantarem.pt/estudante-internacional/,https://www.ipsantarem.pt/esgts/esgts-mobilidade-internacional-incoming/,https://erasmus.lifeandguides.com/santarem/,,angličtina B2,,Erasmus
+KDU,Universidade de Lisboa,Lisboa,Portugalská republika,http://www.letras.ulisboa.pt/,https://www.letras.ulisboa.pt/pt/ensino/mestrados/2181-postgraduate-units-taught-in-english,https://www.sas.ulisboa.pt/,,,,Erasmus
+KRP,Universidade de Lisboa,Lisboa,Portugalská republika,http://www.letras.ulisboa.pt/,https://www.letras.ulisboa.pt/pt/ensino/mestrados/2181-postgraduate-units-taught-in-english,https://www.sas.ulisboa.pt/,,,potvrzeno e-mailem,Erasmus
+PCH,Universidade de Lisboa,Lisboa,Portugalská republika,https://www.psicologia.ulisboa.pt/ensino/apoio-ao-aluno/mobilidade/,,https://www.sas.ulisboa.pt/,,,,Erasmus
+KRP,Universidade de Trás-os-Montes e Alto Douro,Vila Real,Portugalská republika,https://www.utad.pt/en/,,,,,,Erasmus
+KRP,University of Algarve,Faro,Portugalská republika,https://www.ualg.pt/en,,,,,,Erasmus
+KHI,University of Coimbra,Coimbra,Portugalská republika,https://www.uc.pt/en,,,,,Euroculture,Erasmus
+KRP,University of Coimbra,Coimbra,Portugalská republika,https://www.uc.pt/en,,,,,,Erasmus
+KMU,University of Évora,Évora,Portugalská republika,https://www.uevora.pt/en,,,,,kontakt přes KRP,Erasmus
+KRP,University of Évora,Évora,Portugalská republika,https://www.uevora.pt/en,,,,,,Erasmus
+KRP,University of Madeira,Funchal,Portugalská republika,https://www.uma.pt/,,,,,,Erasmus
+KPE,University of Minho,Braga,Portugalská republika,https://www.uminho.pt/EN,,,,,,Erasmus
+KRP,University of Minho,Braga,Portugalská republika,https://www.uminho.pt/EN,,,,,,Erasmus
+DVU,University of Porto,Porto,Portugalská republika,https://www.up.pt/portal/en/,,,,,,Erasmus
+KGN,University of Porto,Porto,Portugalská republika,https://www.up.pt/portal/en/,,,,,,Erasmus
+KRP,University of Porto,Porto,Portugalská republika,https://www.up.pt/portal/en/,,,,,,Erasmus
+JUD,Central European University,Vienna,Rakouská republika,https://www.ceu.edu/,https://ceu.studyguide.timeedit.net/studies?mainTab=studies,,,,,Erasmus
+KMU,Gustav Mahler Privatuniversität Für Musik,Klagenfurt,Rakouská republika,https://www.gmpu.ac.at/,,https://www.oeadstudenthousing.at/en/,,,,Erasmus
+DVU,Paris Lodron University of Salzburg,Salzburg,Rakouská republika,https://www.plus.ac.at/?lang=en,https://online.uni-salzburg.at/plus_online/ee/ui/ca2/app/desktop/,https://www.plus.ac.at/international-relations-department/international-relations-office/international-life/living-in-salzburg/?lang=en,,,,Erasmus
+KDU,Paris Lodron University of Salzburg,Salzburg,Rakouská republika,https://www.plus.ac.at/?lang=en,https://online.uni-salzburg.at/plus_online/ee/ui/ca2/app/desktop/,https://www.plus.ac.at/international-relations-department/international-relations-office/international-life/living-in-salzburg/?lang=en,,,,Erasmus
+KPE,Paris Lodron University of Salzburg,Salzburg,Rakouská republika,https://www.plus.ac.at/?lang=en,https://online.uni-salzburg.at/plus_online/ee/ui/ca2/app/desktop/,https://www.plus.ac.at/international-relations-department/international-relations-office/international-life/living-in-salzburg/?lang=en,,,,Erasmus
+KEMS,University of Applied Sciences Burgenland,Eisenstadt,Rakouská republika,https://hochschule-burgenland.at/en/,,,,,,Erasmus
+KEMS,University of Applied Sciences Upper Austria,Wels,Rakouská republika,https://www.fh-ooe.at/en/,,,,,,Erasmus
+KAA,University of Graz,Graz,Rakouská republika,https://www.uni-graz.at/en/,,,,,,Erasmus
+KMU,University of Graz,Graz,Rakouská republika,https://www.uni-graz.at/en/,,,,,,Erasmus
+KSA,University of Graz,Graz,Rakouská republika,https://www.uni-graz.at/en/,,,,,,Erasmus
+DAS,University of Vienna,Vienna,Rakouská republika,https://www.univie.ac.at/en/,,,,,"platná smlouva uzavřená papírově 04.11.2025, pouze pro STA/STT výměny do konce AR 2027/28",Erasmus
+KBH,University of Vienna,Vienna,Rakouská republika,https://www.univie.ac.at/en/,,,,,pouze pro STA mobility,Erasmus
+KDU,University of Vienna,Vienna,Rakouská republika,https://www.univie.ac.at/,,,,,platná smlouva uzavřená papírově 08.07.2024,Erasmus
+KGN,University of Vienna,Vienna,Rakouská republika,https://www.univie.ac.at/en/,,,,,platná smlouva uzavřená papírově 24.10.2022,Erasmus
+KFI,National and Kapodistrian University of Athens,Athens,Řecká republika,https://en.uoa.gr/,https://en.interel.uoa.gr/erasmus_student_mobility/selection_of_courses,https://en.interel.uoa.gr/erasmus/erasmus_student_mobility/accommodation,,angličtina B2,,Erasmus
+KMU,National and Kapodistrian University of Athens,Athens,Řecká republika,https://en.uoa.gr/,https://en.interel.uoa.gr/erasmus_student_mobility/selection_of_courses,https://en.interel.uoa.gr/erasmus/erasmus_student_mobility/accommodation,,angličtina B2,,Erasmus
+KHI,University of Crete,Heraklion,Řecká republika,https://www.uoc.gr/en/home/,,,,,,Erasmus
+PCH,University of Crete,Heraklion,Řecká republika,https://www.uoc.gr/en/home/,,,,,potvrzena e-mailem,Erasmus
+KDU,Ionian University,Corfu,Řecká republika,https://ionio.gr/en/studies/faculties/maa/,https://avarts.ionio.gr/en/studies/,,,,,Erasmus
+KMU,Ionian University,Corfu,Řecká republika,https://ionio.gr/en/studies/faculties/maa/,https://avarts.ionio.gr/en/studies/,,,,,Erasmus
+KEMS,International Slavic University,Skopje,Republika Severní Makedonie,https://msu.edu.mk/24141/?lang=en,https://msu.edu.mk/fakulteti/feiop/dodiplomski/mb/?lang=en,https://erasmusplay.com/en/skopje.html?srsltid=AfmBOopgrJih915hWF39N456kwXXYkE4Cx1s05wfIngVNGhAxj9mT1Dl,,,,Erasmus
+PCH,International Slavic University,Skopje,Republika Severní Makedonie,https://msu.edu.mk/24141/?lang=en,https://msu.edu.mk/fakulteti/fp/dodiplomski/op-stara-programa/?lang=en,https://erasmusplay.com/en/skopje.html?srsltid=AfmBOopgrJih915hWF39N456kwXXYkE4Cx1s05wfIngVNGhAxj9mT1Dl,,,,Erasmus
+PCH,Ss. Cyril and Methodius University in Skopje,Skopje,Republika Severní Makedonie,https://www.ukim.edu.mk/en_index.php,,,,,,Erasmus
+KHI,1 Decembrie 1918 University of Alba Iulia,Alba Iulia,Rumunsko,https://en.uab.ro/,http://relint.uab.ro/index.php?pagina=pg&id=42&l=en,,,,,Erasmus
+KAA,Babes-Bolyai University,Cluj-Napoca,Rumunsko,https://www.ubbcluj.ro/en/,https://cci.ubbcluj.ro/wp-content/uploads/2022/04/Curricula-courses-in-English.pdf,https://www.ubbcluj.ro/en/studenti/campus/spatii_cazare?utm_source=chatgpt.com,,,,Erasmus
+KDU,Babes-Bolyai University,Cluj-Napoca,Rumunsko,https://www.ubbcluj.ro/en/,https://cci.ubbcluj.ro/wp-content/uploads/2022/04/Curricula-courses-in-English.pdf,https://www.ubbcluj.ro/en/studenti/campus/spatii_cazare?utm_source=chatgpt.com,,,,Erasmus
+KHI,Babes-Bolyai University,Cluj-Napoca,Rumunsko,https://www.ubbcluj.ro/en/,https://cci.ubbcluj.ro/wp-content/uploads/2022/04/Curricula-courses-in-English.pdf,https://www.ubbcluj.ro/en/studenti/campus/spatii_cazare?utm_source=chatgpt.com,,,smlouva zatím schválena 24.02.2025 papírově,Erasmus
+KPE,Babes-Bolyai University,Cluj-Napoca,Rumunsko,https://www.ubbcluj.ro/en/,https://cci.ubbcluj.ro/wp-content/uploads/2022/04/Curricula-courses-in-English.pdf,https://www.ubbcluj.ro/en/studenti/campus/spatii_cazare?utm_source=chatgpt.com,,,,Erasmus
+KGN,Babes-Bolyai University,Cluj-Napoca,Rumunsko,https://www.ubbcluj.ro/en/,https://cci.ubbcluj.ro/wp-content/uploads/2022/04/Curricula-courses-in-English.pdf,https://www.ubbcluj.ro/en/studenti/campus/spatii_cazare?utm_source=chatgpt.com,,,,Erasmus
+KEMS,National University of Political Studies and Public Administration,Bucharest,Rumunsko,https://snspa.ro/en/,https://erasmus.snspa.ro/study-with-us/course-catalog/,,,,,Erasmus
+KBH,University of Bucharest,Bucharest,Rumunsko,https://unibuc.ro/?lang=en,,,,,,Erasmus
+KEMS,University of Bucharest,Bucharest,Rumunsko,https://unibuc.ro/?lang=en,,,,,,Erasmus
+KFI,University of Bucharest,Bucharest,Rumunsko,https://unibuc.ro/?lang=en,,,,,,Erasmus
+KGN,University of Bucharest,Bucharest,Rumunsko,https://unibuc.ro/?lang=en,,,,,,Erasmus
+NIZ,University of Bucharest,Bucharest,Rumunsko,https://unibuc.ro/?lang=en,,,,,,Erasmus
+KRS,West University of Timisoara,Timisoara,Rumunsko,https://www.uvt.ro/en/,,,,,,Erasmus
+KSA,West University of Timisoara,Timisoara,Rumunsko,https://www.uvt.ro/en/,,,,,,Erasmus
+KDU Film and TV,Academy of Performing Arts,Bratislava,Slovenská republika,https://www.vsmu.sk,https://www.vsmu.sk/wp-content/uploads/2024/06/Introduction-to-Film-Art.pdf,https://www.vsmu.sk/en/accommodation/,,,,Erasmus
+KDU Theatre,Academy of Performing Arts,Bratislava,Slovenská republika,https://www.vsmu.sk,https://www.vsmu.sk/wp-content/uploads/2024/06/Theatre-Faculty-Courses.pdf,https://www.vsmu.sk/en/accommodation/,,,,Erasmus
+KMU,Academy of Performing Arts,Bratislava,Slovenská republika,https://www.vsmu.sk,https://www.vsmu.sk/wp-content/uploads/2024/06/EHTF_Study-Plans-of-the-Music-and-Dance-Faculty_2024-1.pdf,https://www.vsmu.sk/en/accommodation/,,,,Erasmus
+KRI,Catholic University in Ružomberok,Ružomberok,Slovenská republika,https://www.ku.sk,https://www.ku.sk/en/catholic-university-in-ruzomberok/one-point/erasmus/student-23315/courses-offered/,,,,pouze na STA výměny,Erasmus
+KSR,Catholic University in Ružomberok,Ružomberok,Slovenská republika,https://www.ku.sk,https://www.ku.sk/en/catholic-university-in-ruzomberok/one-point/erasmus/student-23315/courses-offered/,,,,,Erasmus
+KZU,Catholic University in Ružomberok,Ružomberok,Slovenská republika,https://www.ku.sk,https://www.ku.sk/en/catholic-university-in-ruzomberok/one-point/erasmus/student-23315/courses-offered/,,,,,Erasmus
+PCH,Catholic University in Ružomberok,Ružomberok,Slovenská republika,https://www.ku.sk,https://www.ku.sk/en/catholic-university-in-ruzomberok/one-point/erasmus/student-23315/courses-offered/,,,,,Erasmus
+DAS,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+DVU,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KAA,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KBH,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KFI,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KHI,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KHI,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KMU,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KOL,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KRF,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KSA,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KSA,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KSO,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KZU,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+NIZ,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+PCH,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+PCH,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+PCH,Comenius University in Bratislava,Bratislava,Slovenská republika,https://uniba.sk/en/,https://uniba.sk/en/international-relations/course-catalogue/,,,,,Erasmus
+KBH,Constantine the Philosopher University in Nitra,Nitra,Slovenská republika,https://www.ukf.sk/en/university,https://www.ukf.sk/en/study/erasmus-ects-course-catalogue,https://www.ukf.sk/en/faculties-and-units/halls-of-residence,,,,Erasmus
+KBH,Constantine the Philosopher University in Nitra,Nitra,Slovenská republika,https://www.ukf.sk/en/university,https://www.ukf.sk/en/study/erasmus-ects-course-catalogue,https://www.ukf.sk/en/faculties-and-units/halls-of-residence,,,,Erasmus
+KHI,Constantine the Philosopher University in Nitra,Nitra,Slovenská republika,https://www.ukf.sk/en/university,https://www.ukf.sk/en/study/erasmus-ects-course-catalogue,https://www.ukf.sk/en/faculties-and-units/halls-of-residence,,,,Erasmus
+KOL,Constantine the Philosopher University in Nitra,Nitra,Slovenská republika,https://www.ukf.sk/en/university,https://www.ukf.sk/en/study/erasmus-ects-course-catalogue,https://www.ukf.sk/en/faculties-and-units/halls-of-residence,,,,Erasmus
+KSA,Constantine the Philosopher University in Nitra,Nitra,Slovenská republika,https://www.ukf.sk/en/university,https://www.ukf.sk/en/study/erasmus-ects-course-catalogue,https://www.ukf.sk/en/faculties-and-units/halls-of-residence,,,,Erasmus
+KZU,Constantine the Philosopher University in Nitra,Nitra,Slovenská republika,https://www.ukf.sk/en/university,https://www.ukf.sk/en/study/erasmus-ects-course-catalogue,https://www.ukf.sk/en/faculties-and-units/halls-of-residence,,,,Erasmus
+KPE,Constantine the Philosopher University in Nitra,Nitra,Slovenská republika,https://www.ukf.sk/en/university,https://www.ukf.sk/en/study/erasmus-ects-course-catalogue,https://www.ukf.sk/en/faculties-and-units/halls-of-residence,,,,Erasmus
+PCH,Constantine the Philosopher University in Nitra,Nitra,Slovenská republika,https://www.ukf.sk/en/university,https://www.ukf.sk/en/study/erasmus-ects-course-catalogue,https://www.ukf.sk/en/faculties-and-units/halls-of-residence,,,,Erasmus
+KFI,Matej Bela University,Banská Bystrica,Slovenská republika,https://www.umb.sk/en/,https://www.umb.sk/en/erasmus/course-catalogue.html,https://www.umb.sk/en/erasmus/incoming-exchange-student/accommodation-and-boarding-for-incoming-exchange-students.html,,,,Erasmus
+KHI,Matej Bela University,Banská Bystrica,Slovenská republika,https://www.umb.sk/en/,https://www.umb.sk/en/erasmus/course-catalogue.html,https://www.umb.sk/en/erasmus/incoming-exchange-student/accommodation-and-boarding-for-incoming-exchange-students.html,,,,Erasmus
+KRF,Matej Bela University,Banská Bystrica,Slovenská republika,https://www.umb.sk/en/,https://www.umb.sk/en/erasmus/course-catalogue.html,https://www.umb.sk/en/erasmus/incoming-exchange-student/accommodation-and-boarding-for-incoming-exchange-students.html,,,,Erasmus
+KSA,Matej Bela University,Banská Bystrica,Slovenská republika,https://www.umb.sk/en/,https://www.umb.sk/en/erasmus/course-catalogue.html,https://www.umb.sk/en/erasmus/incoming-exchange-student/accommodation-and-boarding-for-incoming-exchange-students.html,,,,Erasmus
+PCH,Pan-European University,Bratislava,Slovenská republika,https://www.paneurouni.com/en/home/,https://www.paneurouni.com/en/international-cooperation/erasmus/,https://www.studentresidence.sk/en/,,,,Erasmus
+KAA,Pavol Jozef Šafárik University in Kosice,Košice,Slovenská republika,https://www.upjs.sk/en/?prefferedLang=EN,https://www.upjs.sk/en/information/international-relations/erasmus/calendar-catalogue/,https://www.upjs.sk/en/information/international-relations/onepoint/,,,,Erasmus
+KFI,Pavol Jozef Šafárik University in Kosice,Košice,Slovenská republika,https://www.upjs.sk/en/?prefferedLang=EN,https://www.upjs.sk/en/information/international-relations/erasmus/calendar-catalogue/,https://www.upjs.sk/en/information/international-relations/onepoint/,,,,Erasmus
+KHI,Pavol Jozef Šafárik University in Kosice,Košice,Slovenská republika,https://www.upjs.sk/en/?prefferedLang=EN,https://www.upjs.sk/en/information/international-relations/erasmus/calendar-catalogue/,https://www.upjs.sk/en/information/international-relations/onepoint/,,,,Erasmus
+DVU,Trnava University,Trnava,Slovenská republika,https://www.truni.sk/en,https://international.truni.sk/en/truni-inernational/course-catalogue,https://www.truni.sk/en/accommodation,,,,Erasmus
+KFI,Trnava University,Trnava,Slovenská republika,https://www.truni.sk/en,https://international.truni.sk/en/truni-inernational/course-catalogue,https://www.truni.sk/en/accommodation,,,,Erasmus
+KKF,Trnava University,Trnava,Slovenská republika,https://www.truni.sk/en,https://international.truni.sk/en/truni-inernational/course-catalogue,https://www.truni.sk/en/accommodation,,,,Erasmus
+KSA,Trnava University,Trnava,Slovenská republika,https://www.truni.sk/en,https://international.truni.sk/en/truni-inernational/course-catalogue,https://www.truni.sk/en/accommodation,,,,Erasmus
+KSA,Trnava University,Trnava,Slovenská republika,https://www.truni.sk/en,https://international.truni.sk/en/truni-inernational/course-catalogue,https://www.truni.sk/en/accommodation,,,,Erasmus
+PCH,Trnava University,Trnava,Slovenská republika,https://www.truni.sk/en,https://international.truni.sk/en/truni-inernational/course-catalogue,https://www.truni.sk/en/accommodation,,,,Erasmus
+KEMS,University of Economics in Bratislava,Bratislava,Slovenská republika,https://euba.sk/en/,,,,,,Erasmus
+KBH,University of Presov,Prešov,Slovenská republika,https://www.unipo.sk/en/,,,,,,Erasmus
+KHI,University of Presov,Prešov,Slovenská republika,https://www.unipo.sk/en/,,,,,,Erasmus
+KRF,University of Presov,Prešov,Slovenská republika,https://www.unipo.sk/en/,,,,,,Erasmus
+KSA,University of Presov,Prešov,Slovenská republika,https://www.unipo.sk/en/,,,,,,Erasmus
+KSO,University of Presov,Prešov,Slovenská republika,https://www.unipo.sk/en/,,,,,,Erasmus
+KSU,University of Presov,Prešov,Slovenská republika,https://www.unipo.sk/en/,,,,,,Erasmus
+KZU,University of Presov,Prešov,Slovenská republika,https://www.unipo.sk/en/,,,,,,Erasmus
+PCH,University of Presov,Prešov,Slovenská republika,https://www.unipo.sk/en/,,,,,,Erasmus
+KGN,University of Ss. Cyril and Methodius in Trnava,Trnava,Slovenská republika,https://www.ucm.sk/en/,,,,,,Erasmus
+KSA,University of Ss. Cyril and Methodius in Trnava,Trnava,Slovenská republika,https://www.ucm.sk/en/,,,,,,Erasmus
+KZU,University of Ss. Cyril and Methodius in Trnava,Trnava,Slovenská republika,https://www.ucm.sk/en/,,,,,,Erasmus
+PCH,University of Ss. Cyril and Methodius in Trnava,Trnava,Slovenská republika,https://www.ucm.sk/en/,,,,,,Erasmus
+DAS,University of Ljubljana,Ljubljana,Slovinská republika,https://www.uni-lj.si/university/,,,,,,Erasmus
+DVU,University of Ljubljana,Ljubljana,Slovinská republika,https://www.uni-lj.si/university/,,,,,,Erasmus
+KBH,University of Ljubljana,Ljubljana,Slovinská republika,https://www.uni-lj.si/university/,,,,,,Erasmus
+KDU,University of Ljubljana,Ljubljana,Slovinská republika,https://www.agrft.uni-lj.si/en,,,,,,Erasmus
+KFI,University of Ljubljana,Ljubljana,Slovinská republika,https://www.uni-lj.si/university/,,,,,,Erasmus
+KGN,University of Ljubljana,Ljubljana,Slovinská republika,https://www.uni-lj.si/university/,,,,,,Erasmus
+KRF,University of Ljubljana,Ljubljana,Slovinská republika,https://www.uni-lj.si/university/,,,,,,Erasmus
+KRS,University of Ljubljana,Ljubljana,Slovinská republika,https://www.uni-lj.si/university/,,,,,,Erasmus
+NIZ,University of Ljubljana,Ljubljana,Slovinská republika,https://www.uni-lj.si/university/,,,,,,Erasmus
+KAE,University of Maribor,Maribor,Slovinská republika,https://www.um.si/en/home-page/,,,,,,Erasmus
+KHI,University of Maribor,Maribor,Slovinská republika,https://www.um.si/en/home-page/,,,,,potvrzena e-mailem,Erasmus
+KSA,University of Maribor,Maribor,Slovinská republika,https://www.um.si/en/home-page/,,,,,potvrzena e-mailem,Erasmus
+KEMS,University of Primorska,Koper,Slovinská republika,https://www.upr.si/,,,,,,Erasmus
+KPE,Complutense University of Madrid,Madrid,Španělské království,https://www.ucm.es/english,https://www.ucm.es/english/study-programmes,https://www.ucm.es/english/housing-office,,,,Erasmus
+KEMS,Rey Juan Carlos University,Mostoles,Španělské království,https://en.urjc.es/,https://en.urjc.es/internacional/erasmus-y-movilidad/252-erasmus,https://en.urjc.es/internacional/erasmus-y-movilidad/252-erasmus,,angličtina B2,"podepsána papírově 16.02.2024, partner není na EWP",Erasmus
+KPE,Rey Juan Carlos University,Mostoles,Španělské království,https://en.urjc.es/,https://en.urjc.es/internacional/erasmus-y-movilidad/252-erasmus,https://en.urjc.es/internacional/erasmus-y-movilidad/252-erasmus,,angličtina B2,"podepsána papírově 16.02.2024, partner není na EWP",Erasmus
+KAA,Universidad Autónoma de Madrid,Madrid,Španělské království,https://www.uam.es/uam/en/inicio,https://www.uam.es/uam/en/internacional/english-courses,https://www.uam.es/uam/en/internacional/estudiantes/alojamiento,,,,Erasmus
+KHI,Universidad Autónoma de Madrid,Madrid,Španělské království,https://www.uam.es/uam/en/inicio,https://www.uam.es/uam/en/internacional/english-courses,https://www.uam.es/uam/en/internacional/estudiantes/alojamiento,,,,Erasmus
+KPE,Universidad Autónoma de Madrid,Madrid,Španělské království,https://www.uam.es/uam/en/inicio,https://www.uam.es/uam/en/internacional/english-courses,https://www.uam.es/uam/en/internacional/estudiantes/alojamiento,,,,Erasmus
+KRS,Universidad Autónoma de Madrid,Madrid,Španělské království,https://www.uam.es/uam/en/inicio,https://www.uam.es/uam/hispanicos,https://www.uam.es/uam/en/internacional/estudiantes/alojamiento,,,potvrzena e-mailem,Erasmus
+KAA,Universidad de La Laguna,La Laguna,Španělské království,https://www.ull.es/en/,https://www.ull.es/internacional/erasmus/en/incoming-erasmus-estudios/,https://erasmusplay.com/en/),,,,Erasmus
+KRS,Universidad de La Laguna,La Laguna,Španělské království,https://www.ull.es/en/,https://www.ull.es/internacional/erasmus/en/incoming-erasmus-estudios/,https://erasmusplay.com/en/),,,,Erasmus
+KAA,Universidad de León,Leon,Španělské království,https://www.unileon.es/,,,,,,Erasmus
+PCH,Universidad de Salamanca,Salamanca,Španělské království,https://www.usal.es/en/university-glance,https://guias.usal.es/guias-planes-repositorio/,https://colegioscomedores.usal.es/#colegios-residencias,,,,Erasmus
+DVU,Universidad de Sevilla,Sevilla,Španělské království,https://www.informatica.us.es/index.php/relaciones-internacionales/international-students?id=444,,,,,platná smlouva uzavřená papírově 19.10.2022,Erasmus
+KAA,Universidad de Sevilla,Sevilla,Španělské království,https://www.us.es/,,,,,,Erasmus
+KRS,Universidad de Sevilla,Sevilla,Španělské království,https://www.us.es/,,,,,,Erasmus
+KRS,Universidade de Vigo,Vigo,Španělské království,https://www.uvigo.gal/en,,,,,,Erasmus
+KHI,Universitat Autonoma de Barcelona,Barcelona,Španělské království,https://www.uab.cat/web/universitat-autonoma-de-barcelona-1345467954774.html,,,,,,Erasmus
+KZU,Universitat Internacional de Catalunya,Barcelona,Španělské království,https://www.uic.es/en,,,,,,Erasmus
+PCH,University of a Coruna,La Coruna,Španělské království,https://www.udc.es/en/ori/conoce_la_udc/,,,,,,Erasmus
+CJV,University of Alicante,Alicante,Španělské království,https://www.ua.es/en/,,,,,potvrzena e-mailem,Erasmus
+KRP,University of Burgos,Burgos,Španělské království,https://www.ubu.es/english-version,,,,,potvrzena emailem,Erasmus
+KRS,University of Castilla-La Mancha,Ciudad Real,Španělské království,https://www.uclm.es/?sc_lang=en,,,,,potvrzena e-mailem,Erasmus
+KHI,University of Deusto,Bilbao,Španělské království,https://www.deusto.es/en/home,,,,,"Euroculture programme finished
+new IIA just for AY 2025/26",Erasmus
+KRS,University of Extremadura,Badajoz,Španělské království,https://www.unex.es/?set_language=en&cl=en,,,,,,Erasmus
+KPE,University of Girona,Girona,Španělské království,https://www.udg.edu/en/,,,,,,Erasmus
+KRS,University of Girona,Girona,Španělské království,https://www.udg.edu/en/,,,,,,Erasmus
+KAA,University of Granada,Granada,Španělské království,https://www.ugr.es/en,https://ugrcat.ugr.es/en/,https://internacional.ugr.es/en/staff/interantional-welcome-centre/faq,,,,Erasmus
+KPE,University of Granada,Granada,Španělské království,https://www.ugr.es/en,https://ugrcat.ugr.es/en/,https://internacional.ugr.es/en/staff/interantional-welcome-centre/faq,,,,Erasmus
+KRS,University of Granada,Granada,Španělské království,https://www.ugr.es/en,https://ugrcat.ugr.es/en/,https://internacional.ugr.es/en/staff/interantional-welcome-centre/faq,,,,Erasmus
+KRS,University of Granada,Granada,Španělské království,https://www.ugr.es/en,https://ugrcat.ugr.es/en/,https://internacional.ugr.es/en/staff/interantional-welcome-centre/faq,,,,Erasmus
+KAA,University of Las Palmas de Gran Canaria,Las Palmas De Gran Canaria,Španělské království,https://www.ulpgc.es/,,,,,potvrzena e-mailem,Erasmus
+KEMS,University of Las Palmas de Gran Canaria,Las Palmas De Gran Canaria,Španělské království,https://www.ulpgc.es/,,,,,potvrzena e-mailem,Erasmus
+KRS,University of Las Palmas de Gran Canaria,Las Palmas De Gran Canaria,Španělské království,https://www.ulpgc.es/,,,,,potvrzena emailem,Erasmus
+KHI,University of Las Palmas de Gran Canaria,Las Palmas De Gran Canaria,Španělské království,https://www.ulpgc.es/,,,,,,Erasmus
+KRS,University of Málaga,Malaga,Španělské království,https://www.uma.es/?set_language=en,,,,,"platná smlouva uzavřená papírově. 05.02.2024 a 09.05.2023, pro Bc. a akademické mobility",Erasmus
+KRS,University of Málaga,Malaga,Španělské království,https://www.uma.es/?set_language=en,,,,,"platná smlouva uzavřená papírově. 05.02.2024 a 09.05.2024, jenom pro NMgr. mobility",Erasmus
+KRS,University of Málaga,Malaga,Španělské království,https://www.uma.es/?set_language=en,,,,,"platná smlouva uzavřená papírově. 05.02.2024 a 09.05.2025, jenom pro Ph.D. mobility",Erasmus
+KRS,University of Oviedo,Oviedo,Španělské království,https://www.uniovi.es/en/internacional/extranjeros,,,,,=$AG$185,Erasmus
+KHI,University of Santiago de Compostela,Santiago De Compostela,Španělské království,https://www.usc.gal/en,,,,,,Erasmus
+KRS,University of Santiago de Compostela,Santiago De Compostela,Španělské království,https://www.usc.gal/en,,,,,,Erasmus
+KFI,University of the Basque Country,Leioa,Španělské království,https://www.ehu.eus/en/en-home,https://www.ehu.eus/en/web/nazioarteko-harremanak/en-courses-taught-in-english-and-french,https://www.ehu.eus/en/web/nazioarteko-harremanak/en-accommodation,,,potvrzena e-mailem,Erasmus
+KFI,University of the Basque Country,Leioa,Španělské království,https://www.ehu.eus/en/en-home,https://www.ehu.eus/en/web/nazioarteko-harremanak/en-courses-taught-in-english-and-french,https://www.ehu.eus/en/web/nazioarteko-harremanak/en-accommodation,,,"potvrzena e-mailem, Ph.D. mobility",Erasmus
+KOL,University of the Basque Country,Leioa,Španělské království,https://www.ehu.eus/en/en-home,https://www.ehu.eus/en/web/nazioarteko-harremanak/en-courses-taught-in-english-and-french,https://www.ehu.eus/en/web/nazioarteko-harremanak/en-accommodation,,,,Erasmus
+KOL,University of the Basque Country,Leioa,Španělské království,https://www.ehu.eus/en/en-home,https://www.ehu.eus/en/web/nazioarteko-harremanak/en-courses-taught-in-english-and-french,https://www.ehu.eus/en/web/nazioarteko-harremanak/en-accommodation,,,,Erasmus
+KOL,Universtiy of the Basque Country,Leioa,Španělské království,https://www.ehu.eus/en/en-home,,,,,Ph.D mobility,Erasmus
+KGN,Carl von Ossietzky University of Oldenburg,Oldenburg,Spolková republika Německo,https://uol.de/en,https://uol.de/en/exchange-studies/courses,https://uol.de/en/exchange-studies/living-in-oldenburg-finding-accomodation,,,,Erasmus
+KGN,Chemnitz University of Technology,Chemnitz,Spolková republika Německo,https://www.tu-chemnitz.de/index.html.en,https://www.tu-chemnitz.de/international/incoming/erasmus/vlvz.php.en,https://www.tu-chemnitz.de/international/incoming/chemnitz/unterkunft.php.en?utm_source=chatgpt.com,,,,Erasmus
+KHI,Chemnitz University of Technology,Chemnitz,Spolková republika Německo,https://www.tu-chemnitz.de/index.html.en,https://www.tu-chemnitz.de/international/incoming/erasmus/vlvz.php.en,https://www.tu-chemnitz.de/international/incoming/chemnitz/unterkunft.php.en?utm_source=chatgpt.com,,,,Erasmus
+KGN,Freie Universität Berlin,Berlin,Spolková republika Německo,https://www.fu-berlin.de/en/index.html,https://www.fu-berlin.de/en/studium/international/studium_fu/semester-ausland/index.html,https://www.fu-berlin.de/en/sites/unterbringung/optionen-programmstudenten/index.html,,,,Erasmus
+KAA,Friedrich Schiller University Jena,Jena,Spolková republika Německo,https://www.uni-jena.de/en,https://www.uni-jena.de/en/223168/programme-specific-information,https://www.stw-thueringen.de/en/housing/,,,,Erasmus
+KBH,Friedrich Schiller University Jena,Jena,Spolková republika Německo,https://www.uni-jena.de/en,https://www.uni-jena.de/en/223168/programme-specific-information,https://www.stw-thueringen.de/en/housing/,,,,Erasmus
+KPE,Friedrich Schiller University Jena,Jena,Spolková republika Německo,https://www.uni-jena.de/en,https://www.uni-jena.de/en/223168/programme-specific-information,https://www.stw-thueringen.de/en/housing/,,,,Erasmus
+KGN,Friedrich Schiller University Jena,Jena,Spolková republika Německo,https://www.uni-jena.de/en,https://www.uni-jena.de/en/223168/programme-specific-information,https://www.stw-thueringen.de/en/housing/,,,,Erasmus
+DAS,Friedrich-Alexander-Universität Erlangen-Nürnberg,Erlangen,Spolková republika Německo,https://www.fau.eu,https://www.campo.fau.de/qisserver/pages/cs/sys/portal/hisinoneStartPage.faces,https://www.werkswelt.de/index.php?id=erlangen,,,partner má akreditaci programu jen do 2027/28 - proto žádá zkrácení do 2027/8,Erasmus
+KAA,Goethe University Frankfurt,Frankfurt Am Main,Spolková republika Německo,https://www.goethe-university-frankfurt.de/en?locale=en,https://www.uni-frankfurt.de/122913225/Before_your_Mobility_to_Frankfurt,https://www.uni-frankfurt.de/122913225/Before_your_Mobility_to_Frankfurt,,,,Erasmus
+KDU,Goethe University Frankfurt,Frankfurt Am Main,Spolková republika Německo,https://www.goethe-university-frankfurt.de/en?locale=en,https://www.uni-frankfurt.de/122913225/Before_your_Mobility_to_Frankfurt,https://www.uni-frankfurt.de/122913225/Before_your_Mobility_to_Frankfurt,,,,Erasmus
+KAA,Johannes Gutenberg University Mainz,Mainz,Spolková republika Německo,https://www.uni-mainz.de/eng/,"https://jogustine.uni-mainz.de/scripts/mgrqispi.dll?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000002,-N000848,-A00%5Fvorlesungen%5Fen",https://www.studierendenwerk-mainz.de/wohnen/entscheiden-bewerben/mietportal,,"němčina B2, pro některé kurzy možná angličtina B2 (viz course catalogue)","Campus Mainz, philology",Erasmus
+KAA,Johannes Gutenberg University Mainz,Mainz/ Germersheim,Spolková republika Německo,https://www.uni-mainz.de/eng/,"https://jogustine.uni-mainz.de/scripts/mgrqispi.dll?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000002,-N000848,-A00%5Fvorlesungen%5Fen",https://www.wohnbau-ger.de/studentenwohnheim/,,"němčina B2,","nová smlouva, Campus Gamersheim, translatology",Erasmus
+KGN,Johannes Gutenberg University Mainz,Mainz,Spolková republika Německo,https://www.uni-mainz.de/eng/,"https://jogustine.uni-mainz.de/scripts/mgrqispi.dll?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000002,-N000848,-A00%5Fvorlesungen%5Fen",https://www.studierendenwerk-mainz.de/wohnen/entscheiden-bewerben/mietportal,,"němčina B2, pro některé kurzy možná angličtina B2 (viz course catalogue)","Campus Mainz, philology",Erasmus
+KGN,Johannes Gutenberg University Mainz,Mainz/ Germersheim,Spolková republika Německo,https://www.uni-mainz.de/eng/,"https://jogustine.uni-mainz.de/scripts/mgrqispi.dll?APPNAME=CampusNet&PRGNAME=EXTERNALPAGES&ARGUMENTS=-N000000000000002,-N000848,-A00%5Fvorlesungen%5Fen",https://www.wohnbau-ger.de/studentenwohnheim/,,němčina B2,"nová smlouva, Campus Gamersheim, translatology",Erasmus
+KSA,Justus Liebig University Giessen,Giessen,Spolková republika Německo,https://www.uni-giessen.de/welcome,https://www.uni-giessen.de/de/internationales/ce,https://www.uni-giessen.de/en/international-pages/erasmus/europe/in/application/accommodation,,,,Erasmus
+KGN,Karlsruhe Institute of Technology,Karlsruhe,Spolková republika Německo,https://www.intl.kit.edu/istudies/3171.php,https://campus.studium.kit.edu/events/catalog.php,https://www.kit.edu/study/living-and-learning-in-karlsruhe.php,,němčina B1 je povinná,,Erasmus
+KBH,Leipzig University,Leipzig,Spolková republika Německo,https://www.uni-leipzig.de/en,https://almaweb.uni-leipzig.de/vvz,https://www.studentenwerk-leipzig.de/en/housing/our-student-halls-of-residence/,,němčina B2 (na individuální bázi někdy akceptují i B1),potvrzena e-mailem,Erasmus
+KMU,Leipzig University,Leipzig,Spolková republika Německo,https://www.uni-leipzig.de/en,https://almaweb.uni-leipzig.de/vvz,https://www.studentenwerk-leipzig.de/en/housing/our-student-halls-of-residence/,,němčina B2 (na individuální bázi někdy akceptují i B1),potvrzeno e-mailem,Erasmus
+KHI,Martin Luther University of Halle-Wittenberg,Halle,Spolková republika Německo,https://www.uni-halle.de/?lang=en,https://studip.uni-halle.de/dispatch.php/search/courses?start_item_id=root&level=vv&cancel_login=1,https://www.ich-will-wissen.de/fileadmin/user_upload/International_Office/Wohnen/20260702_Housing-bilingual.pdf,,,,Erasmus
+KMU,Martin Luther University of Halle-Wittenberg,Halle,Spolková republika Německo,https://www.uni-halle.de/?lang=en,https://studip.uni-halle.de/dispatch.php/search/courses?start_item_id=root&level=vv&cancel_login=1,https://www.ich-will-wissen.de/fileadmin/user_upload/International_Office/Wohnen/20260702_Housing-bilingual.pdf,,,,Erasmus
+KEMS,Munich Business School,Munich,Spolková republika Německo,https://www.munich-business-school.de/,https://www.munich-business-school.de/en/mbs/international/incoming-exchange,https://www.munich-business-school.de/en/mbs/services/accommodation,,,potvrzena e-mailem,Erasmus
+CJV,Nordhausen University of Applied Sciences,Nordhausen,Spolková republika Německo,https://www.hs-nordhausen.de/en/,,,,,,Erasmus
+KEMS,Nuertingen-Geislingen University,Nürtingen,Spolková republika Německo,https://www.hfwu.com/,https://www.hfwu.com/future-students/course-catalog/,https://www.hfwu.com/future-students/semester-hfwu/,,angličtina B2,,Erasmus
+PCH,Osnabrück University,Osnabrück,Spolková republika Německo,https://www.uni-osnabrueck.de/en/home/,https://www.uni-osnabrueck.de/en/studying/our-study-programs/exchange-studies-at-osnabrueck-university/course-offer-for-exchange-students,https://www.uni-osnabrueck.de/en/studying/our-study-programs/exchange-studies-at-osnabrueck-university,,,,Erasmus
+PCH,Protestant University of Applied Sciences in Bochum,Bochum,Spolková republika Německo,https://www.evh-bochum.de/welcome.html,https://ecampus.evh-bochum.de/qisserver/pages/cm/exa/coursecatalog/showCourseCatalog.xhtml?_flowId=showCourseCatalog-flow&_flowExecutionKey=e1s1,https://www.akafoe.de/wohnen,,němčina B1 pro Bc. a B2 pro NMgr.,"podepsána papírově, partner není na EWP",Erasmus
+DAS,Ruhr-Universität Bochum,Bochum,Spolková republika Německo,https://www.ruhr-uni-bochum.de/en,https://international.ruhr-uni-bochum.de/en/course-catalogue,https://international.ruhr-uni-bochum.de/en/wohnraum-fuer-austauschstudierende,,"němčina (B2), čínsština, japonština nebo korejština (A2)",,Erasmus
+KGN,Saarland University,Saarbrücken,Spolková republika Německo,https://www.uni-saarland.de/en/home.html,https://www.uni-saarland.de/en/fachrichtung/germanistik/studium/erasmus-international/incoming-students.html,https://www.uni-saarland.de/en/global/welcome-center/accommodation/exchange-students-and-freemovers.html,,,,Erasmus
+DVU,Technische Universität Dresden (TUD),Dresden,Spolková republika Německo,https://tu-dresden.de/#,,,,,,Erasmus
+KGN,Technische Universität Dresden (TUD),Dresden,Spolková republika Německo,https://tu-dresden.de/#,,,,,potvrzena e-mailem,Erasmus
+PCH,Technische Universität Dresden (TUD),Dresden,Spolková republika Německo,https://tu-dresden.de/#,,,,,potvrzena e-mailem,Erasmus
+KSR,Trier University,Trier,Spolková republika Německo,https://www.uni-trier.de/en/,,,,,,Erasmus
+KBH,Universität Hamburg,Hamburg,Spolková republika Německo,https://www.uni-hamburg.de/en.html,,,,,,Erasmus
+KSR,Universität Regensburg,Regensburg,Spolková republika Německo,https://www.uni-regensburg.de/en/international/coming-to-regensburg/exchange-programs,,,,,,Erasmus
+KSA,University of Applied Sciences in Saarbrücken,Saarbrücken,Spolková republika Německo,https://www.htwsaar.de/en/index_2015.html,https://www.htwsaar.de/english/incoming-students/study-opportunities,https://www.htwsaar.de/english/incoming-students/preparing-your-stay/housing,,,,Erasmus
+KFI,University of Bamberg,Bamberg,Spolková republika Německo,https://www.uni-bamberg.de/en/,,,,,,Erasmus
+KGN (KAA),University of Bamberg,Bamberg,Spolková republika Německo,https://www.uni-bamberg.de/en/,,,,,,Erasmus
+KHI,University of Bremen,Bremen,Spolková republika Německo,https://www.uni-bremen.de/,,,,,,Erasmus
+KPE,University of Erfurt,Erfurt,Spolková republika Německo,https://www.uni-erfurt.de/en/,,,,,,Erasmus
+KZU,University of Erfurt/Faculty of Education,Erfurt,Spolková republika Německo,https://www.uni-erfurt.de/en/,,,,,,Erasmus
+KZU,University of Erfurt/Faculty of Philosophy,Erfurt,Spolková republika Německo,https://www.uni-erfurt.de/en/,,,,,,Erasmus
+DVU,University of Göttingen,Göttingen,Spolková republika Německo,https://www.uni-goettingen.de/en/1.html,,,,,obnovení staré zrušené smlouvy,Erasmus
+KBH,University of Göttingen,Göttingen,Spolková republika Německo,https://www.uni-goettingen.de/en/1.html,,,,,,Erasmus
+KHI,University of Göttingen,Göttingen,Spolková republika Německo,https://www.uni-goettingen.de/en/1.html,,,,,,Erasmus
+KPE,University of Göttingen,Göttingen,Spolková republika Německo,https://www.uni-goettingen.de/en/1.html,,,,,,Erasmus
+KGN,University of Greifswald,Greifswald,Spolková republika Německo,https://www.uni-greifswald.de/en/,,,,,potvrzena e-mailem,Erasmus
+KSR,University of Greifswald,Greifswald,Spolková republika Německo,https://www.uni-greifswald.de/en/,,,,,potvrzena e-mailem,Erasmus
+KFI,University of Münster,Münster,Spolková republika Německo,https://www.uni-muenster.de/en/,https://www.uni-muenster.de/studieninteressierte/en/austausch/index.html,https://www.uni-muenster.de/studieninteressierte/en/austausch/wohnen.html,,,,Erasmus
+KHI,University of Münster,Münster,Spolková republika Německo,https://www.uni-muenster.de/en/,https://studium.uni-muenster.de/qisserver/rds?state=wtree&search=1&category=veranstaltung.browse&navigationPosition=lectures%2Clectureindex&breadcrumb=lectureindex&topitem=lectures&subitem=lectureindex&noDBAction=y&init=y,https://www.uni-muenster.de/studieninteressierte/en/austausch/wohnen.html,,,potvrzena e-mailem,Erasmus
+KRF,University of Passau,Passau,Spolková republika Německo,https://www.uni-passau.de/en/international-office,,,,,smlouva prouze pro STA/STT a krátkodobé SMS Ph.D. mobility,Erasmus
+KBH,University of Potsdam,Potsdam,Spolková republika Německo,https://www.uni-potsdam.de/en/university-of-potsdam,,,,,,Erasmus
+KHI,University of Tübingen,Tübingen,Spolková republika Německo,https://uni-tuebingen.de/,https://uni-tuebingen.de/en/238107,https://www.my-stuwe.de/en/housing/,,,potvrzena emailem,Erasmus
+KHI,University of Tübingen,Tübingen,Spolková republika Německo,https://uni-tuebingen.de/,https://uni-tuebingen.de/en/238107,https://www.my-stuwe.de/en/housing/,,,nová smlouva od AR 2026/27,Erasmus
+KPE,Malmö University,Malmö,Švédské království,https://mau.se/en/education/apply-for-exchange-studies/,https://mau.se/en/education/apply-for-exchange-studies/,https://mau.se/en/education/housing/university-housing/,,angličtina B2,,Erasmus
+KZU,Örebro University,Örebro,Švédské království,https://www.oru.se/exchange,https://www.oru.se/english/study/exchange-studies/courses-for-exchange-students/,https://www.oru.se/english/study/exchange-studies/housing-for-exchange-students/,,,,Erasmus
+KDU,Örebro University,Örebro,Švédské království,https://www.oru.se/exchange,https://www.oru.se/english/study/exchange-studies/courses-for-exchange-students/,https://www.oru.se/english/study/exchange-studies/housing-for-exchange-students/,,,,Erasmus
+KHI,Uppsala University,Uppsala,Švédské království,https://www.uu.se/en,,,,,Euroculture,Erasmus
+KSA,Balikesir University,Balikesir,Turecká republika,https://www.balikesir.edu.tr/site/index?lang=en,https://baunwebapi.balikesir.edu.tr/uploads/1766061557316.pdf,https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fbaunwebapi.balikesir.edu.tr%2Fuploads%2F1766062301450.docx&wdOrigin=BROWSELINK,,,,Erasmus
+KSA,Beykent University,Istanbul,Turecká republika,https://www.beykent.edu.tr/en,https://obs.beykent.edu.tr/oibs/bologna/index.aspx?lang=en,,,,,Erasmus
+KHI,Bursa Uludag University,Bursa,Turecká republika,https://www.uludag.edu.tr/english/default,https://bilgipaketi.uludag.edu.tr/Programlar/IndexENG/33,https://www.eyurtlar.com/en/bursa/university/bursa-uludag-uni,,,,Erasmus
+KMU,Bursa Uludag University,Bursa,Turecká republika,https://www.uludag.edu.tr/english/default,http://bilgipaketi.uludag.edu.tr/Programlar/IndexENG/33,https://www.eyurtlar.com/en/bursa/university/bursa-uludag-uni,,,,Erasmus
+KEMS,Çag University,Mersin,Turecká republika,https://www.cag.edu.tr/en,https://www.erasmus.cag.edu.tr/faculty-of-economics-and-administrative-sciences.html,,,,,Erasmus
+KHI,Eskisehir Osmangazi University,Eskisehir,Turecká republika,https://www.ogu.edu.tr/en,https://ects.ogu.edu.tr/,,,,,Erasmus
+PCH,Haliç University,Istanbul,Turecká republika,https://exchange.halic.edu.tr/,https://obs.halic.edu.tr/oibs/bologna/index.aspx?lang=en,https://international.halic.edu.tr/accommodation/,,,,Erasmus
+KDU,Instanbul University,Istanbul,Turecká republika,https://www.istanbul.edu.tr,https://ebs.istanbul.edu.tr/,,,,,Erasmus
+KPE,Isik University,Istanbul,Turecká republika,https://www.isikun.edu.tr/en,https://e-campus.isikun.edu.tr/Coursecatalog/Index,,,,,Erasmus
+PCH,Istanbul Bilgi University,Istanbul,Turecká republika,https://www.bilgi.edu.tr/en/,https://ects.bilgi.edu.tr/Course?IsDetailSearch=False&ContextId=95&q=Psychology&CycleNo=-1&FacultyId=-1&DepartmentId=-1&OfferStyleId=-1&OpenToUndergraduate=false,https://studiosantral.com/anasayfa?lang=EN,,,,Erasmus
+PCH,Istanbul Commerce University,Istanbul,Turecká republika,https://international.ticaret.edu.tr/,https://erasmusoffice.ticaret.edu.tr/course-catalogue/,https://erasmusoffice.ticaret.edu.tr/icu-student-life/accommodation/,,,,Erasmus
+KSR,Istanbul Okan University,Istanbul,Turecká republika,https://www.okan.edu.tr/en/,https://www.okan.edu.tr/en/insanvetoplum/page/1562/course-plan/,https://www.okan.edu.tr/en/erasmus/page/1581/accommodation/,,,,Erasmus
+KFI,Izmir Kâtip Çelebi University,Izmir,Turecká republika,https://ikcu.edu.tr/,https://ubs.ikc.edu.tr/AIS/OutcomeBasedLearning/Home/Index?culture=en-US,https://www.studyleo.com/en/universities/izmir-katip-celebi-university/dormitories,,Angličtina min. B1,,Erasmus
+KFI,Marmara University,Istanbul,Turecká republika,https://www.isikun.edu.tr/international/incoming-students,https://meobs.marmara.edu.tr/Program/information-on-programmes/undergraduate-900002,https://international.marmara.edu.tr/accommodation/,,,,Erasmus
+PCH,Ufuk University,Ankara,Turecká republika,http://bipa.ufuk.edu.tr/,,,,,,Erasmus
+`;
+
+/* ---------- stav ---------- */
+let DATA=[], selKat=new Set(), selZeme=new Set(), query='', showAll=false;
+
+/* ---------- načtení ---------- */
+function jsonp(url){
+  return new Promise((resolve,reject)=>{
+    const cb='__vyjezdy_cb_'+Math.random().toString(36).slice(2);
+    const s=document.createElement('script');
+    const to=setTimeout(()=>{cleanup();reject(new Error('timeout'));},12000);
+    function cleanup(){clearTimeout(to);try{delete window[cb];}catch(e){}s.remove();}
+    window[cb]=data=>{cleanup();resolve(data);};
+    s.onerror=()=>{cleanup();reject(new Error('script error'));};
+    s.src=url+(url.includes('?')?'&':'?')+'callback='+cb;
+    document.body.appendChild(s);
+  });
+}
+async function load(){
+  let records=null, live=false;
+  // 1) doporučeno: Apps Script (JSONP) — čte živě originální tabulku
+  if(typeof APPS_SCRIPT_URL!=='undefined' && APPS_SCRIPT_URL){
+    try{ const d=await jsonp(APPS_SCRIPT_URL);
+      if(Array.isArray(d)){ records=d; live=true; } }catch(e){}
+  }
+  // 2) alternativa: publikovaný CSV
+  if(!records && typeof SHEET_CSV_URL!=='undefined' && SHEET_CSV_URL){
+    try{ const res=await fetch(SHEET_CSV_URL,{cache:'no-store'});
+      if(res.ok){ records=csvToObjects(parseCSV(await res.text())); live=true; } }catch(e){}
+  }
+  // 3) záloha: zabudovaná ukázková data
+  if(!records){ records=csvToObjects(parseCSV(EMBEDDED_CSV)); }
+
+  DATA=normalize(records);
+  document.getElementById('srcTag').textContent = live ? 'zdroj: živá tabulka' : 'zdroj: ukázková data';
+  const cfgSet=(typeof APPS_SCRIPT_URL!=='undefined'&&APPS_SCRIPT_URL)||(typeof SHEET_CSV_URL!=='undefined'&&SHEET_CSV_URL);
+  if(cfgSet && !live){
+    const b=document.getElementById('banner');
+    b.textContent='Živý zdroj se nepodařilo načíst — zobrazuji ukázková data. Zkontroluj nasazení skriptu (nebo publikaci tabulky).';
+    b.classList.add('show');
+  }
+  buildChips(); buildZeme(); render();
+}
+
+/* ---------- katedra chips ---------- */
+function buildChips(){
+  const counts={};
+  DATA.forEach(r=>r._tags.forEach(t=>counts[t]=(counts[t]||0)+1));
+  const order=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]||a.localeCompare(b));
+  const box=document.getElementById('chips'); box.innerHTML='';
+  order.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='chip'; b.type='button'; b.setAttribute('aria-pressed','false');
+    b.textContent=t; b.title=`${t} — ${counts[t]} ${counts[t]==1?'smlouva':'smluv'}`;
+    b.onclick=()=>{ b.getAttribute('aria-pressed')==='true'?selKat.delete(t):selKat.add(t);
+      b.setAttribute('aria-pressed', selKat.has(t)); showAll=false; render(); };
+    box.appendChild(b);
+  });
+}
+
+/* ---------- země dropdown ---------- */
+function buildZeme(){
+  const counts={};
+  DATA.forEach(r=>counts[r._zeme]=(counts[r._zeme]||0)+1);
+  const order=Object.keys(counts).sort((a,b)=>a.localeCompare(b,'cs'));
+  const box=document.getElementById('zOpts'); box.innerHTML='';
+  order.forEach(z=>{
+    const lab=document.createElement('label'); lab.className='opt';
+    lab.innerHTML=`<input type="checkbox" value="${z.replace(/"/g,'&quot;')}"><span>${z}</span><span class="oc">${counts[z]}</span>`;
+    lab.querySelector('input').onchange=e=>{
+      e.target.checked?selZeme.add(z):selZeme.delete(z);
+      showAll=false; updateZemeLabel(); render();
+    };
+    box.appendChild(lab);
+  });
+  document.getElementById('zSearch').oninput=e=>{
+    const v=e.target.value.toLowerCase();
+    [...box.children].forEach(l=>{l.style.display=l.textContent.toLowerCase().includes(v)?'':'none';});
+  };
+}
+function updateZemeLabel(){
+  const cnt=document.getElementById('ddCnt'), lab=document.getElementById('ddLabel');
+  if(selZeme.size){ cnt.hidden=false; cnt.textContent=selZeme.size;
+    lab.textContent = selZeme.size===1 ? [...selZeme][0] : 'Vybrané země'; }
+  else { cnt.hidden=true; lab.textContent='Všechny země'; }
+}
+
+/* dropdown open/close */
+const dd=document.getElementById('ddZeme'), ddBtn=document.getElementById('ddBtn');
+ddBtn.onclick=()=>{const open=dd.getAttribute('data-open')==='true';
+  dd.setAttribute('data-open',!open); ddBtn.setAttribute('aria-expanded',!open);};
+document.addEventListener('click',e=>{ if(!dd.contains(e.target)) {dd.setAttribute('data-open','false');ddBtn.setAttribute('aria-expanded','false');}});
+
+/* ---------- search + clear ---------- */
+document.getElementById('q').oninput=e=>{query=e.target.value.trim().toLowerCase();showAll=false;render();};
+document.getElementById('clearBtn').onclick=()=>{
+  selKat.clear(); selZeme.clear(); query=''; showAll=false;
+  document.getElementById('q').value='';
+  document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
+  document.querySelectorAll('#zOpts input').forEach(c=>c.checked=false);
+  updateZemeLabel(); render();
+};
+
+/* ---------- filtrování + render ---------- */
+function filtered(){
+  return DATA.filter(r=>{
+    if(selKat.size && !r._tags.some(t=>selKat.has(t))) return false;
+    if(selZeme.size && !selZeme.has(r._zeme)) return false;
+    if(query){
+      const hay=(r.skola+' '+r.mesto+' '+r._zeme).toLowerCase();
+      if(!hay.includes(query)) return false;
+    }
+    return true;
+  });
+}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function icon(name){
+  const p={cat:'<path d="M4 5h16M4 12h16M4 19h10"/>',ext:'<path d="M7 17 17 7M9 7h8v8"/>',
+    home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/>'}[name];
+  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+}
+function card(r){
+  const gates=r._tags.map(t=>`<span class="gate">${esc(t)}</span>`).join('');
+  const kvota=r.kvota?`<span class="pill kvota">kvóta ${esc(r.kvota)}</span>`:'';
+  const lang=r.jazyk?`<span class="pill lang">${esc(r.jazyk)}</span>`:'';
+  const pub=r.poznamka?`<div class="note pub">${esc(r.poznamka)}</div>`:'';
+  const links=[];
+  if(r.course) links.push(`<a class="lnk primary" href="${esc(r.course)}" target="_blank" rel="noopener">${icon('cat')}Katalog kurzů</a>`);
+  if(r.web) links.push(`<a class="lnk" href="${esc(r.web)}" target="_blank" rel="noopener">${icon('ext')}Web školy</a>`);
+  if(r.ubytovani) links.push(`<a class="lnk" href="${esc(r.ubytovani)}" target="_blank" rel="noopener">${icon('home')}Ubytování</a>`);
+  return `<article class="card">
+    <div class="ceyebrow"><span>${esc(r._zeme)}</span><span class="dot"></span><span>${esc(r.mesto)}</span></div>
+    <h3>${esc(r.skola)}</h3>
+    <div class="badges">${gates}${kvota}${lang}</div>
+    ${pub}
+    <div class="links">${links.join('')||'<span class="metahint">Zatím bez odkazů — doplní se.</span>'}</div>
+  </article>`;
+}
+
+function render(){
+  const grid=document.getElementById('grid'), state=document.getElementById('state'),
+        meta=document.getElementById('meta');
+  const active = selKat.size||selZeme.size||query;
+  document.getElementById('clearBtn').disabled = !active;
+  document.getElementById('katSel').textContent = selKat.size?`· vybráno ${selKat.size}`:'';
+
+  // před výběrem: pobídka
+  if(!active && !showAll){
+    grid.innerHTML=''; meta.hidden=true;
+    state.innerHTML=`<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h16M4 12h16M4 19h10"/></svg>
+      <div class="big">Vyber svoji katedru</div>
+      <div>Klikni nahoře na zkratku své katedry (nebo víc, když máš dvouobor) a uvidíš, kam z ní můžeš vyjet.</div>
+      <button class="linkbtn" onclick="showAll=true;render()">Nebo si zobraz všechny školy (${DATA.length})</button>`;
+    state.style.display=''; return;
+  }
+  const res=filtered();
+  if(!res.length){
+    grid.innerHTML=''; meta.hidden=true;
+    state.innerHTML=`<div class="big">Nic tu není</div>
+      <div>Pro tuhle kombinaci filtrů žádná škola není. Zkus ubrat zemi nebo vyhledávání.</div>`;
+    state.style.display=''; return;
+  }
+  state.style.display='none'; meta.hidden=false;
+  document.getElementById('count').innerHTML=`<b>${res.length}</b> ${res.length==1?'škola':res.length<5?'školy':'škol'}`;
+  document.getElementById('hint').textContent = showAll&&!active ? 'všechny partnerské školy' : 'seřazeno podle země';
+  grid.innerHTML=res.map(card).join('');
+}
+
+/* sticky stín */
+const fbar=document.getElementById('filters');
+const senti=document.createElement('div');
+fbar.parentNode.insertBefore(senti,fbar);
+new IntersectionObserver(([e])=>fbar.classList.toggle('stuck',!e.isIntersecting),{threshold:1})
+  .observe(senti);
+
+load();
+</script>
