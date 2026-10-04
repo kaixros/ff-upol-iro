@@ -17,7 +17,7 @@
   --radius:14px; --shadow:0 1px 2px rgba(22,33,62,.04),0 6px 24px rgba(22,33,62,.06);
   --disp:"PT Sans",sans-serif;
   --body:"PT Sans",sans-serif;
-  --mono:'Arial;
+  --mono:'Arial', sans-serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -185,6 +185,16 @@ footer .wrap{display:flex;justify-content:space-between;width:100%;flex-wrap:wra
   cursor:pointer;text-decoration:underline;text-underline-offset:3px;margin-left:auto}
 .mapattr{flex-basis:100%;opacity:.65;font-size:10px}
 
+
+/* --- doktorandský pod-přepínač + popisek typu --- */
+.phdmode{display:inline-flex;align-items:center;gap:10px;margin-left:12px;vertical-align:middle}
+.phdmode[hidden]{display:none}
+.tlabel2{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.seg.sub button{padding:7px 13px;font-size:12.5px}
+.typedesc{margin-top:16px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);
+  border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.55;color:var(--ink);max-width:70ch}
+.typedesc[hidden]{display:none}
+.typedesc a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px;word-break:break-word}
 </style>
 </head>
 <body>
@@ -200,7 +210,15 @@ footer .wrap{display:flex;justify-content:space-between;width:100%;flex-wrap:wra
       <button data-type="nmgr" aria-pressed="false">Navazující mgr.</button>
       <button data-type="phd" aria-pressed="false">Doktorand</button>
       <button data-type="zam" aria-pressed="false">Zaměstnanec</button>
+      <span class="phdmode" id="phdMode" hidden>
+        <span class="tlabel2">a chci na</span>
+        <span class="seg sub" id="phdSeg" role="group" aria-label="Délka doktorandského výjezdu">
+          <button data-phd="long" aria-pressed="true">Dlouhodobý</button>
+          <button data-phd="short" aria-pressed="false">Krátkodobý</button>
+        </span>
+      </span>
     </div>
+    <div class="typedesc" id="typeDesc" hidden></div>
   </div>
 </div></header>
 
@@ -331,6 +349,7 @@ const EMBEDDED = [{"katedra": "KHI", "skola": "Catholic University of Leuven", "
 
 /* ---------- stav ---------- */
 let DATA=[], selType='bc', selKat=new Set(), selZeme=new Set(), query='', showAll=false;
+let phdMode='long', POPISKY={};
 let selView='list', mapCountry=null;
 const TYPE_LABEL={bc:'bakaláře',nmgr:'navazující magistry',phd:'doktorandy',zam:'zaměstnance'};
 
@@ -345,7 +364,7 @@ function normalize(records){
       kvotaStud:g('kvotaStud'), kvotaZam:g('kvotaZam'),
       jazyk:g('jazyk'), poznamka:g('poznamka'),
       bc:g('bc').toUpperCase(), nmgr:g('nmgr').toUpperCase(),
-      phd:g('phd').toUpperCase(), zam:g('zam').toUpperCase()
+      phd:g('phd').toUpperCase(), phdShort:g('phdShort').toUpperCase(), zam:g('zam').toUpperCase()
     };
     rec._tags=deptTags(rec.katedra);
     rec._zeme=rec.zeme;
@@ -370,7 +389,10 @@ function jsonp(url){
 async function load(){
   let records=null, live=false;
   if(APPS_SCRIPT_URL){
-    try{ const d=await jsonp(APPS_SCRIPT_URL); if(Array.isArray(d)){records=d;live=true;} }catch(e){}
+    try{ const d=await jsonp(APPS_SCRIPT_URL);
+      if(Array.isArray(d)){ records=d; live=true; }
+      else if(d && Array.isArray(d.rows)){ records=d.rows; POPISKY=d.popisky||{}; live=true; }
+    }catch(e){}
   }
   if(!records){ records=EMBEDDED; }
   DATA=normalize(records);
@@ -383,12 +405,43 @@ async function load(){
   buildKat(); buildZeme(); wireType(); wireView(); render();
 }
 
+/* ---------- typ: pomocné ---------- */
+function typeAno(r){
+  if(selType==='bc') return r.bc==='ANO';
+  if(selType==='nmgr') return r.nmgr==='ANO';
+  if(selType==='zam') return r.zam==='ANO';
+  if(selType==='phd') return (phdMode==='short' ? r.phdShort==='ANO' : r.phd==='ANO');
+  return false;
+}
+function descKey(){
+  if(selType==='phd') return phdMode==='long' ? 'phd_long' : 'phd_short';
+  return selType;
+}
+function curTypeLabel(){
+  if(selType==='phd') return phdMode==='short' ? 'doktorandy (krátkodobý výjezd)' : 'doktorandy (dlouhodobý výjezd)';
+  return TYPE_LABEL[selType];
+}
+function renderTypeDesc(){
+  const el=document.getElementById('typeDesc');
+  const txt=(POPISKY && POPISKY[descKey()]) ? String(POPISKY[descKey()]).trim() : '';
+  if(txt){ el.innerHTML=linkify(txt); el.hidden=false; }
+  else { el.innerHTML=''; el.hidden=true; }
+}
+
 /* ---------- typ studenta ---------- */
 function wireType(){
   document.querySelectorAll('#typeSeg button').forEach(b=>{
     b.onclick=()=>{
       selType=b.dataset.type;
       document.querySelectorAll('#typeSeg button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+      document.getElementById('phdMode').hidden = (selType!=='phd');
+      showAll=false; render();
+    };
+  });
+  document.querySelectorAll('#phdSeg button').forEach(b=>{
+    b.onclick=()=>{
+      phdMode=b.dataset.phd;
+      document.querySelectorAll('#phdSeg button').forEach(x=>x.setAttribute('aria-pressed', x===b));
       showAll=false; render();
     };
   });
@@ -419,7 +472,7 @@ function buildKat(){
 function refreshKatCounts(){
   const counts={};
   DATA.forEach(r=>{
-    if(r[selType]!=='ANO') return;
+    if(!typeAno(r)) return;
     if(query){ const hay=(r.skola+' '+r.mesto+' '+r._zeme).toLowerCase(); if(!hay.includes(query)) return; }
     r._tags.forEach(t=>counts[t]=(counts[t]||0)+1);
   });
@@ -459,7 +512,7 @@ function buildZeme(){
 function refreshZemeCounts(){
   const counts={};
   DATA.forEach(r=>{
-    if(r[selType]!=='ANO') return;
+    if(!typeAno(r)) return;
     if(selKat.size && !r._tags.some(t=>selKat.has(t))) return;
     if(query){ const hay=(r.skola+' '+r.mesto+' '+r._zeme).toLowerCase(); if(!hay.includes(query)) return; }
     counts[r._zeme]=(counts[r._zeme]||0)+1;
@@ -511,7 +564,7 @@ document.getElementById('clearBtn').onclick=()=>{
 /* ---------- filtrování + render ---------- */
 function filtered(){
   return DATA.filter(r=>{
-    if(r[selType]!=='ANO') return false;
+    if(!typeAno(r)) return false;
     if(selKat.size && !r._tags.some(t=>selKat.has(t))) return false;
     if(selZeme.size && !selZeme.has(r._zeme)) return false;
     if(query){ const hay=(r.skola+' '+r.mesto+' '+r._zeme).toLowerCase(); if(!hay.includes(query)) return false; }
@@ -519,7 +572,7 @@ function filtered(){
   });
 }
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function linkify(s){
+function linkseg(s){
   s=s||''; const re=/https?:\/\/[^\s]+/g; let out='',last=0,m;
   while((m=re.exec(s))){
     out+=esc(s.slice(last,m.index));
@@ -529,6 +582,11 @@ function linkify(s){
   }
   out+=esc(s.slice(last));
   return out;
+}
+/* středník nebo nový řádek v buňce => zalomení na vlastní řádek */
+function linkify(s){
+  s=(s||'').replace(/\r\n?/g,'\n');
+  return s.split(/\s*;\s*|\n/).map(p=>p.trim()).filter(p=>p!=='').map(linkseg).join('<br>');
 }
 function icon(name){
   const p={cat:'<path d="M4 5h16M4 12h16M4 19h10"/>',
@@ -540,10 +598,11 @@ function icon(name){
 }
 function card(r){
   const gates=r._tags.map(t=>`<span class="gate">${esc(t)}</span>`).join('');
-  const q = selType==='zam' ? r.kvotaZam : r.kvotaStud;
+  const shortPhd = (selType==='phd' && phdMode==='short');
+  const q = shortPhd ? '' : (selType==='zam' ? r.kvotaZam : r.kvotaStud);
   const kvota = q ? `<span class="pill kvota">kvóta ${esc(q)}/rok</span>` : '';
   const dname = r._names.length ? `<div class="deptname">${esc(r._names.join(' · '))}</div>` : '';
-  const lang = r.jazyk ? `<div class="lang">Doporučený jazyk: ${esc(r.jazyk)}</div>` : '';
+  const lang = r.jazyk ? `<div class="lang">Doporučený jazyk: ${linkify(r.jazyk)}</div>` : '';
   const pub = r.poznamka ? `<div class="note pub"><span class="nl">Poznámka</span>${linkify(r.poznamka)}</div>` : '';
   const accNote = r.ubytText ? `<div class="note"><span class="nl">Ubytování</span>${linkify(r.ubytText)}</div>` : '';
 
@@ -567,7 +626,7 @@ function card(r){
 function renderCore(){
   const grid=document.getElementById('grid'), state=document.getElementById('state'), meta=document.getElementById('meta');
   const active = selKat.size||selZeme.size||query;
-  refreshKatCounts(); refreshZemeCounts();
+  refreshKatCounts(); refreshZemeCounts(); renderTypeDesc();
   document.getElementById('clearBtn').disabled = !active;
   document.getElementById('katSel').textContent = selKat.size?`· vybráno ${selKat.size}`:'';
   const mapMode = selView==='map';
@@ -575,13 +634,13 @@ function renderCore(){
   document.getElementById('mapWrap').hidden = !mapMode;
   if(mapMode){ renderMap(); return; }
 
-  const typeTotal = DATA.filter(r=>r[selType]==='ANO').length;
+  const typeTotal = DATA.filter(r=>typeAno(r)).length;
 
   if(!active && !showAll){
     grid.innerHTML=''; meta.hidden=true;
     state.innerHTML=`<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h16M4 12h16M4 19h10"/></svg>
       <div class="big">Vyber svoji katedru</div>
-      <div>Máš nahoře vybráno <b>${TYPE_LABEL[selType]}</b>. Teď klikni na zkratku své katedry (nebo víc, když máš dvouobor) a uvidíš, kam můžeš vyjet.</div>
+      <div>Máš nahoře vybráno <b>${curTypeLabel()}</b>. Teď klikni na zkratku své katedry (nebo víc, když máš dvouobor) a uvidíš, kam můžeš vyjet.</div>
       <button class="linkbtn" onclick="showAll=true;render()">Nebo si zobraz všechny školy (${typeTotal})</button>`;
     state.style.display=''; return;
   }
@@ -589,12 +648,12 @@ function renderCore(){
   if(!res.length){
     grid.innerHTML=''; meta.hidden=true;
     state.innerHTML=`<div class="big">Nic tu není</div>
-      <div>Pro <b>${TYPE_LABEL[selType]}</b> a tuhle kombinaci filtrů žádná škola není. Zkus jiný typ, ubrat zemi nebo vyhledávání.</div>`;
+      <div>Pro <b>${curTypeLabel()}</b> a tuhle kombinaci filtrů žádná škola není. Zkus jiný typ, ubrat zemi nebo vyhledávání.</div>`;
     state.style.display=''; return;
   }
   state.style.display='none'; meta.hidden=false;
   document.getElementById('count').innerHTML=`<b>${res.length}</b> ${res.length==1?'škola':res.length<5?'školy':'škol'}`;
-  document.getElementById('hint').textContent = `pro ${TYPE_LABEL[selType]} · seřazeno podle země`;
+  document.getElementById('hint').textContent = `pro ${curTypeLabel()} · seřazeno podle země`;
   grid.innerHTML=res.map(card).join('');
 }
 
@@ -630,7 +689,7 @@ function renderMap(){
   document.getElementById('meta').hidden=true;
   document.getElementById('state').style.display='none';
   const base=DATA.filter(r=>{
-    if(r[selType]!=='ANO') return false;
+    if(!typeAno(r)) return false;
     if(selKat.size && !r._tags.some(t=>selKat.has(t))) return false;
     if(query){ const hay=(r.skola+' '+r.mesto+' '+r._zeme).toLowerCase(); if(!hay.includes(query)) return false; }
     return true;
